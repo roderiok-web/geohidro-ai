@@ -131,6 +131,8 @@ button:active:not(:disabled) { transform: scale(.97); }
 .iframe-map-frame { position:absolute; inset:0; overflow:hidden; }
 .iframe-google-map { position:absolute; inset:0; z-index:0; width:100%; height:100%; border:0; pointer-events:none; filter:saturate(.82) contrast(1.02); }
 .iframe-map-frame:after { content:""; position:absolute; z-index:1; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(7,19,28,.56) 0,transparent 20%,transparent 74%,rgba(7,19,28,.62) 100%); }
+.iframe-map-interaction { position:absolute; z-index:3; inset:0; cursor:grab; touch-action:none; }
+.iframe-map-interaction.dragging { cursor:grabbing; }
 .iframe-city-layer { position:absolute; z-index:4; inset:0; pointer-events:none; }
 .iframe-city-marker { position:absolute; display:grid; width:30px; height:30px; padding:0; border:0; transform:translate(-50%,-50%); place-items:center; color:#fff; background:transparent; pointer-events:auto; cursor:pointer; }
 .iframe-city-circle { position:relative; z-index:2; width:17px; height:17px; border:3px solid #fff; border-radius:50%; background:color-mix(in srgb,var(--marker-color) 72%,transparent); box-shadow:0 0 0 2px var(--marker-color),0 2px 9px rgba(0,0,0,.48),0 0 18px color-mix(in srgb,var(--marker-color) 78%,transparent); }
@@ -144,6 +146,10 @@ button:active:not(:disabled) { transform: scale(.97); }
 .iframe-map-filters select { padding:6px 22px 6px 7px; border:1px solid rgba(255,255,255,.16); border-radius:6px; outline:0; color:#dff7f1; background:rgba(7,19,28,.83); font-size:10px; text-transform:none; letter-spacing:normal; }
 .iframe-map-count { margin-left:auto; padding:6px 8px; border:1px solid rgba(255,255,255,.13); border-radius:6px; color:#c7dfdc; background:rgba(7,19,28,.74); font-family:"DM Mono",monospace; font-size:9px; }
 .iframe-map-toolbar { z-index:6; }
+.iframe-map-controls { position:absolute; z-index:6; top:44px; right:14px; display:grid; gap:4px; }
+.iframe-map-controls button { width:29px; height:29px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.18); border-radius:7px; color:#e8f6f2; background:rgba(7,19,28,.78); font-size:18px; line-height:1; box-shadow:0 3px 12px rgba(0,0,0,.2); }
+.iframe-map-controls button:hover { color:#7ae6c1; border-color:rgba(116,230,189,.5); background:rgba(9,45,54,.9); }
+.iframe-map-hint { position:absolute; z-index:6; top:48px; left:14px; padding:5px 7px; border:1px solid rgba(255,255,255,.12); border-radius:5px; color:#b8d1d0; background:rgba(7,19,28,.66); font-family:"DM Mono",monospace; font-size:8px; pointer-events:none; }
 .gh-map-error { position:absolute; z-index:3; inset:50% auto auto 50%; display:flex; width:min(330px,calc(100% - 32px)); transform:translate(-50%,-50%); flex-direction:column; gap:7px; padding:18px; border:1px solid rgba(255,200,87,.24); border-radius:12px; color:#dbe7e7; background:rgba(8,24,35,.92); box-shadow:0 20px 40px rgba(0,0,0,.3); text-align:center; backdrop-filter:blur(12px); }
 .gh-map-error strong { color:#ffc857; font-size:12px; }.gh-map-error span { color:#91a8ab; font-size:11px; line-height:1.45; }.gh-map-error small { color:#58727e; font-family:"DM Mono",monospace; font-size:8px; }
 .gh-google-marker { position:relative; display:flex; align-items:center; gap:7px; transform:translate(-50%,-50%); cursor:pointer; filter:drop-shadow(0 3px 8px rgba(0,0,0,.5)); }
