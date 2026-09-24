@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
   Activity,
@@ -34,6 +34,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MapView } from "@/components/Map";
 
 const coverageData = [
   { year: "BASE", value: 1133, label: "PN-PDC" },
@@ -85,39 +86,76 @@ function MetricCard({ label, value, detail, accent, icon: Icon, progress }: { la
   );
 }
 
+const cityCoordinates: Record<string, google.maps.LatLngLiteral> = {
+  "Petrópolis": { lat: -22.52, lng: -43.19 },
+  Blumenau: { lat: -26.92, lng: -49.06 },
+  Manaus: { lat: -3.12, lng: -60.02 },
+  Recife: { lat: -8.05, lng: -34.88 },
+  "São Luís": { lat: -2.53, lng: -44.30 },
+  "Porto Alegre": { lat: -30.03, lng: -51.23 },
+};
+
 function BrazilMap({ selected, onSelect }: { selected: string; onSelect: (name: string) => void }) {
+  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
+
+  const makeMarkerContent = (city: (typeof municipalities)[number], isSelected: boolean) => {
+    const content = document.createElement("div");
+    content.className = `gh-google-marker ${isSelected ? "selected" : ""}`;
+    content.style.setProperty("--marker-color", city.color);
+    content.innerHTML = `<span class="gh-marker-pulse"></span><span class="gh-marker-core"></span><span class="gh-marker-label">${city.name} · ${city.coverage}</span>`;
+    return content;
+  };
+
+  const mountMarkers = (map: google.maps.Map) => {
+    markersRef.current.forEach((marker) => (marker.map = null));
+    markersRef.current = municipalities.map((city) => {
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        map,
+        position: cityCoordinates[city.name],
+        title: `${city.name} · ${city.coverage}`,
+        content: makeMarkerContent(city, selectedRef.current === city.name),
+      });
+      marker.addListener("click", () => onSelect(city.name));
+      return marker;
+    });
+  };
+
+  useEffect(() => {
+    markersRef.current.forEach((marker) => {
+      const city = municipalities.find((item) => item.name === marker.title?.split(" · ")[0]);
+      if (city && marker.content instanceof HTMLElement) marker.content.classList.toggle("selected", city.name === selected);
+    });
+  }, [selected]);
+
   return (
-    <div className="map-stage">
+    <div className="map-stage google-map-stage">
       <div className="map-toolbar">
-        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Cobertura em tempo quase real</span></div>
+        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · cobertura quase real</span></div>
         <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#ffb454" }} /> Monitorado</span><span><i className="legend-dot" style={{ background: "#6ee7b7" }} /> Candidato</span><span><i className="legend-dot" style={{ background: "#f36a4f" }} /> Piloto</span></div>
       </div>
-      <svg className="brazil-map" viewBox="0 0 620 470" role="img" aria-label="Mapa esquemático de cobertura GeoHidro AI">
-        <defs>
-          <linearGradient id="landFill" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#16344a" /><stop offset="100%" stopColor="#0c222f" /></linearGradient>
-          <radialGradient id="hotspot"><stop offset="0%" stopColor="#ffb454" stopOpacity=".55" /><stop offset="100%" stopColor="#ffb454" stopOpacity="0" /></radialGradient>
-          <filter id="glow"><feGaussianBlur stdDeviation="6" /></filter>
-        </defs>
-        <path className="map-grid" d="M20 90H600M20 180H600M20 270H600M20 360H600M120 15V455M240 15V455M360 15V455M480 15V455" />
-        <path className="brazil-land" d="M177 55 235 33 298 42 350 31 407 61 472 62 526 107 509 153 548 199 523 240 542 286 504 329 492 383 448 416 410 454 349 443 315 415 257 423 218 393 181 386 164 345 121 324 137 276 105 236 126 196 110 151 145 120Z" fill="url(#landFill)" />
-        <path className="map-river" d="M173 121C238 156 292 145 346 175S445 218 510 195M240 51C273 115 266 192 300 260S336 378 391 436M153 267C213 250 277 271 326 305S420 354 486 338" />
-        <path className="map-river second" d="M402 80C386 153 409 225 458 274S468 361 429 418M213 167C172 221 183 288 233 357" />
-        <circle cx="475" cy="195" r="95" fill="url(#hotspot)" filter="url(#glow)" />
-        <circle cx="274" cy="369" r="82" fill="url(#hotspot)" filter="url(#glow)" />
-        {municipalities.map((city) => {
-          const isSelected = selected === city.name;
-          return (
-            <g key={city.name} onClick={() => onSelect(city.name)} className="map-marker-group" role="button" tabIndex={0}>
-              <circle cx={city.x * 6.05} cy={city.y * 4.65} r={isSelected ? 22 : 15} fill={city.color} opacity=".12" className="pulse-ring" />
-              <circle cx={city.x * 6.05} cy={city.y * 4.65} r={isSelected ? 8 : 6} fill={city.color} stroke="#07131c" strokeWidth="3" />
-              {isSelected && <circle cx={city.x * 6.05} cy={city.y * 4.65} r="12" fill="none" stroke={city.color} strokeWidth="1.5" strokeDasharray="2 3" />}
-              <text x={city.x * 6.05 + 12} y={city.y * 4.65 + 4} className={`map-label ${isSelected ? "selected" : ""}`}>{city.name}</text>
-            </g>
-          );
-        })}
-        <text x="35" y="435" className="map-caption">Dados demonstrativos · escala nacional</text>
-      </svg>
-      <div className="map-footnote"><span className="flex items-center gap-2"><Layers3 size={14} className="text-cyan-300" /> Camadas ativas: risco · cobertura · exposição</span><span className="font-mono text-[10px] text-slate-500">SYNC 09:41:22 UTC</span></div>
+      <MapView className="google-map-canvas" initialCenter={{ lat: -14.2, lng: -51.9 }} initialZoom={4} onMapReady={(map) => {
+        map.setOptions({
+          mapTypeControl: false,
+          fullscreenControl: false,
+          streetViewControl: false,
+          zoomControl: true,
+          styles: [
+            { elementType: "geometry", stylers: [{ color: "#0b202c" }] },
+            { elementType: "labels.text.fill", stylers: [{ color: "#7ea3aa" }] },
+            { elementType: "labels.text.stroke", stylers: [{ color: "#0b202c" }] },
+            { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#54b8b1" }, { weight: 1.2 }] },
+            { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#285362" }, { weight: 0.8 }] },
+            { featureType: "road", elementType: "geometry", stylers: [{ color: "#143442" }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#07141e" }] },
+            { featureType: "poi", stylers: [{ visibility: "off" }] },
+            { featureType: "transit", stylers: [{ visibility: "off" }] },
+          ],
+        });
+        mountMarkers(map);
+      }} />
+      <div className="map-footnote"><span className="flex items-center gap-2"><Layers3 size={14} className="text-cyan-300" /> Camadas: cobertura · risco · exposição</span><span className="font-mono text-[10px] text-slate-500">LIVE · SYNC 09:41:22 UTC</span></div>
     </div>
   );
 }

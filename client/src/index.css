@@ -56,13 +56,20 @@
 
 :root { font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; color-scheme: dark; }
 
+:root {
+  --defesa-blue: #1d5fa7;
+  --defesa-red: #d9283e;
+  --defesa-yellow: #ffc857;
+  --defesa-white: #f7fbff;
+}
+
 * { box-sizing: border-box; }
 button { transition: transform 160ms cubic-bezier(.23,1,.32,1), background-color 180ms ease, border-color 180ms ease, color 180ms ease; }
 button:active:not(:disabled) { transform: scale(.97); }
 
 .gh-sidebar { width: 244px; min-height: 100vh; position: fixed; z-index: 20; left: 0; top: 0; bottom: 0; display: flex; flex-direction: column; padding: 25px 15px 17px; background: linear-gradient(180deg, #0b1c28 0%, #08141e 100%); border-right: 1px solid rgba(255,255,255,.065); }
 .brand-lockup { display:flex; align-items:center; gap:11px; padding: 0 10px; }
-.brand-mark { width:36px; height:36px; display:grid; place-items:center; border-radius:11px; color:#07131c; background:linear-gradient(145deg,#9df5d0,#42cbd0); box-shadow: 0 8px 26px rgba(94,229,201,.15); }
+.brand-mark { width:36px; height:36px; display:grid; place-items:center; border-radius:11px; color:#fff; background:linear-gradient(145deg,var(--defesa-red) 0 47%,var(--defesa-yellow) 48% 100%); box-shadow: 0 8px 26px rgba(217,40,62,.22); }
 .brand-name { font-family:"Space Grotesk",sans-serif; font-size:16px; font-weight:700; letter-spacing:-.04em; color:#f5fbfa; }
 .brand-name span { color:#72e6c1; }
 .brand-sub { margin-top:2px; color:#526b78; font-size:8px; letter-spacing:.18em; font-weight:700; }
@@ -116,6 +123,17 @@ button:active:not(:disabled) { transform: scale(.97); }
 .pulse-dot { width:5px; height:5px; border-radius:50%; background:#f36a4f; box-shadow:0 0 9px #f36a4f; }
 .map-panel, .alert-panel, .coverage-panel, .data-panel, .detail-card { padding:20px; }
 .map-panel { min-height:520px; }.alert-panel { min-height:520px; }.map-stage { position:relative; min-height:426px; overflow:hidden; border:1px solid rgba(255,255,255,.07); border-radius:11px; background:radial-gradient(circle at 50% 45%,rgba(37,114,123,.13),transparent 24rem),#081823; }
+.google-map-stage { isolation:isolate; background:#081823; }
+.google-map-canvas { position:absolute; inset:0; z-index:0; width:100% !important; height:100% !important; opacity:.92; }
+.google-map-canvas > div { border-radius:11px; }
+.google-map-stage:after { content:""; position:absolute; z-index:1; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(7,19,28,.58) 0,transparent 24%,transparent 78%,rgba(7,19,28,.62) 100%); }
+.gh-google-marker { position:relative; display:flex; align-items:center; gap:7px; transform:translate(-50%,-50%); cursor:pointer; filter:drop-shadow(0 3px 8px rgba(0,0,0,.5)); }
+.gh-marker-core { width:13px; height:13px; flex:none; border:3px solid #07131c; border-radius:50%; background:var(--marker-color); box-shadow:0 0 0 2px color-mix(in srgb,var(--marker-color) 55%,transparent),0 0 17px color-mix(in srgb,var(--marker-color) 65%,transparent); }
+.gh-marker-pulse { position:absolute; left:-6px; width:25px; height:25px; border:1px solid color-mix(in srgb,var(--marker-color) 58%,transparent); border-radius:50%; opacity:.7; animation:pulse 2.6s infinite; }
+.gh-marker-label { padding:4px 7px; border:1px solid rgba(255,255,255,.12); border-radius:5px; color:#d8edeb; background:rgba(7,19,28,.85); font-size:9px; font-weight:700; white-space:nowrap; backdrop-filter:blur(5px); }
+.gh-google-marker.selected .gh-marker-core { width:17px; height:17px; border-color:#fff; box-shadow:0 0 0 3px color-mix(in srgb,var(--marker-color) 60%,transparent),0 0 25px var(--marker-color); }
+.gh-google-marker.selected .gh-marker-label { color:#fff; border-color:color-mix(in srgb,var(--marker-color) 65%,white); }
+.gm-style .gm-style-cc, .gm-style a[href^="https://maps.google.com/maps"] { opacity:.7; }
 .map-toolbar { position:absolute; z-index:2; left:14px; top:13px; right:14px; display:flex; align-items:center; justify-content:space-between; gap:15px; }
 .map-toolbar .legend-dot { display:inline-block; width:6px; height:6px; margin-right:4px; border-radius:50%; }.map-toolbar span { white-space:nowrap; }
 .brazil-map { position:absolute; inset:33px 3% 8px; width:94%; height:86%; }.map-grid { stroke:#a0e3d3; stroke-opacity:.06; stroke-width:1; stroke-dasharray:2 5; }.brazil-land { stroke:#3d8290; stroke-opacity:.54; stroke-width:1.3; }.map-river { fill:none; stroke:#65d8d2; stroke-opacity:.35; stroke-width:2; stroke-dasharray:1 6; }.map-river.second { stroke:#7c9dff; stroke-opacity:.17; }.map-marker-group { cursor:pointer; outline:none; }.map-marker-group:hover circle:nth-child(2) { stroke:#d8fff0; }.pulse-ring { animation:pulse 2.8s infinite; transform-box:fill-box; transform-origin:center; }.map-label { fill:#71909b; font-size:10px; font-weight:600; }.map-label.selected { fill:#dcfff0; font-size:11px; }.map-caption { fill:#476877; font-size:9px; font-family:"DM Mono",monospace; }.map-footnote { position:absolute; left:14px; bottom:12px; right:14px; display:flex; justify-content:space-between; font-size:10px; }
