@@ -127,6 +127,8 @@ button:active:not(:disabled) { transform: scale(.97); }
 .google-map-canvas { position:absolute; inset:0; z-index:0; width:100% !important; height:100% !important; opacity:.92; }
 .google-map-canvas > div { border-radius:11px; }
 .google-map-stage:after { content:""; position:absolute; z-index:1; inset:0; pointer-events:none; background:linear-gradient(180deg,rgba(7,19,28,.58) 0,transparent 24%,transparent 78%,rgba(7,19,28,.62) 100%); }
+.gh-map-error { position:absolute; z-index:3; inset:50% auto auto 50%; display:flex; width:min(330px,calc(100% - 32px)); transform:translate(-50%,-50%); flex-direction:column; gap:7px; padding:18px; border:1px solid rgba(255,200,87,.24); border-radius:12px; color:#dbe7e7; background:rgba(8,24,35,.92); box-shadow:0 20px 40px rgba(0,0,0,.3); text-align:center; backdrop-filter:blur(12px); }
+.gh-map-error strong { color:#ffc857; font-size:12px; }.gh-map-error span { color:#91a8ab; font-size:11px; line-height:1.45; }.gh-map-error small { color:#58727e; font-family:"DM Mono",monospace; font-size:8px; }
 .gh-google-marker { position:relative; display:flex; align-items:center; gap:7px; transform:translate(-50%,-50%); cursor:pointer; filter:drop-shadow(0 3px 8px rgba(0,0,0,.5)); }
 .gh-marker-core { width:13px; height:13px; flex:none; border:3px solid #07131c; border-radius:50%; background:var(--marker-color); box-shadow:0 0 0 2px color-mix(in srgb,var(--marker-color) 55%,transparent),0 0 17px color-mix(in srgb,var(--marker-color) 65%,transparent); }
 .gh-marker-pulse { position:absolute; left:-6px; width:25px; height:25px; border:1px solid color-mix(in srgb,var(--marker-color) 58%,transparent); border-radius:50%; opacity:.7; animation:pulse 2.6s infinite; }
