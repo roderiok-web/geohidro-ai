@@ -34,7 +34,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { MapView } from "@/components/Map";
+import { MapView, type CoveragePoint } from "@/components/Map";
 
 const coverageData = [
   { year: "BASE", value: 1133, label: "PN-PDC" },
@@ -45,13 +45,13 @@ const coverageData = [
 ];
 
 const municipalities = [
-  { name: "Petrópolis", state: "RJ", risk: "Alto", type: "Movimento de massa", score: 86, coverage: "Piloto", x: 66, y: 64, color: "#f36a4f" },
-  { name: "Blumenau", state: "SC", risk: "Alto", type: "Inundação", score: 79, coverage: "Monitorado", x: 57, y: 82, color: "#ffb454" },
-  { name: "Manaus", state: "AM", risk: "Moderado", type: "Cheia fluvial", score: 54, coverage: "Candidato", x: 32, y: 34, color: "#6ee7b7" },
-  { name: "Recife", state: "PE", risk: "Alto", type: "Alagamento", score: 73, coverage: "Monitorado", x: 78, y: 47, color: "#ffb454" },
-  { name: "São Luís", state: "MA", risk: "Moderado", type: "Enxurrada", score: 47, coverage: "Candidato", x: 69, y: 29, color: "#6ee7b7" },
-  { name: "Porto Alegre", state: "RS", risk: "Crítico", type: "Inundação", score: 92, coverage: "Piloto", x: 48, y: 91, color: "#ef5c5c" },
-];
+  { name: "Petrópolis", state: "RJ", lat: -22.52, lng: -43.19, risk: "Alto", type: "Movimento de massa", score: 86, coverage: "Piloto", color: "#ef4444" },
+  { name: "Blumenau", state: "SC", lat: -26.92, lng: -49.06, risk: "Alto", type: "Inundação", score: 79, coverage: "Monitorado", color: "#ffc857" },
+  { name: "Manaus", state: "AM", lat: -3.12, lng: -60.02, risk: "Moderado", type: "Cheia fluvial", score: 54, coverage: "Candidato", color: "#6ee7b7" },
+  { name: "Recife", state: "PE", lat: -8.05, lng: -34.88, risk: "Alto", type: "Alagamento", score: 73, coverage: "Monitorado", color: "#ffc857" },
+  { name: "São Luís", state: "MA", lat: -2.53, lng: -44.30, risk: "Moderado", type: "Enxurrada", score: 47, coverage: "Candidato", color: "#6ee7b7" },
+  { name: "Porto Alegre", state: "RS", lat: -30.03, lng: -51.23, risk: "Crítico", type: "Inundação", score: 92, coverage: "Piloto", color: "#ef4444" },
+] satisfies CoveragePoint[];
 
 const alertsSeed = [
   { id: "GH-2409", place: "Petrópolis · RJ", type: "Movimento de massa", level: "Alto", probability: 86, lead: "04h 18m", status: "Pendente", color: "coral", icon: TriangleAlert, reason: "Chuva antecedente + solo saturado" },
@@ -86,78 +86,8 @@ function MetricCard({ label, value, detail, accent, icon: Icon, progress }: { la
   );
 }
 
-const cityCoordinates: Record<string, google.maps.LatLngLiteral> = {
-  "Petrópolis": { lat: -22.52, lng: -43.19 },
-  Blumenau: { lat: -26.92, lng: -49.06 },
-  Manaus: { lat: -3.12, lng: -60.02 },
-  Recife: { lat: -8.05, lng: -34.88 },
-  "São Luís": { lat: -2.53, lng: -44.30 },
-  "Porto Alegre": { lat: -30.03, lng: -51.23 },
-};
-
 function BrazilMap({ selected, onSelect }: { selected: string; onSelect: (name: string) => void }) {
-  const markersRef = useRef<google.maps.marker.AdvancedMarkerElement[]>([]);
-  const selectedRef = useRef(selected);
-  selectedRef.current = selected;
-
-  const makeMarkerContent = (city: (typeof municipalities)[number], isSelected: boolean) => {
-    const content = document.createElement("div");
-    content.className = `gh-google-marker ${isSelected ? "selected" : ""}`;
-    content.style.setProperty("--marker-color", city.color);
-    content.innerHTML = `<span class="gh-marker-pulse"></span><span class="gh-marker-core"></span><span class="gh-marker-label">${city.name} · ${city.coverage}</span>`;
-    return content;
-  };
-
-  const mountMarkers = (map: google.maps.Map) => {
-    markersRef.current.forEach((marker) => (marker.map = null));
-    markersRef.current = municipalities.map((city) => {
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        map,
-        position: cityCoordinates[city.name],
-        title: `${city.name} · ${city.coverage}`,
-        content: makeMarkerContent(city, selectedRef.current === city.name),
-      });
-      marker.addListener("click", () => onSelect(city.name));
-      return marker;
-    });
-  };
-
-  useEffect(() => {
-    markersRef.current.forEach((marker) => {
-      const city = municipalities.find((item) => item.name === marker.title?.split(" · ")[0]);
-      if (city && marker.content instanceof HTMLElement) marker.content.classList.toggle("selected", city.name === selected);
-    });
-  }, [selected]);
-
-  return (
-    <div className="map-stage google-map-stage">
-      <div className="map-toolbar">
-        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · cobertura quase real</span></div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#ffb454" }} /> Monitorado</span><span><i className="legend-dot" style={{ background: "#6ee7b7" }} /> Candidato</span><span><i className="legend-dot" style={{ background: "#f36a4f" }} /> Piloto</span></div>
-      </div>
-      <MapView className="google-map-canvas" initialCenter={{ lat: -14.2, lng: -51.9 }} initialZoom={4} onMapReady={(map) => {
-        map.setOptions({
-          mapTypeControl: false,
-          fullscreenControl: false,
-          streetViewControl: false,
-          zoomControl: true,
-          styles: [
-            { elementType: "geometry", stylers: [{ color: "#0b202c" }] },
-            { elementType: "labels.text.fill", stylers: [{ color: "#7ea3aa" }] },
-            { elementType: "labels.text.stroke", stylers: [{ color: "#0b202c" }] },
-            { featureType: "administrative.country", elementType: "geometry.stroke", stylers: [{ color: "#54b8b1" }, { weight: 1.2 }] },
-            { featureType: "administrative.province", elementType: "geometry.stroke", stylers: [{ color: "#285362" }, { weight: 0.8 }] },
-            { featureType: "road", elementType: "geometry", stylers: [{ color: "#143442" }] },
-            { featureType: "water", elementType: "geometry", stylers: [{ color: "#07141e" }] },
-            { featureType: "poi", stylers: [{ visibility: "off" }] },
-            { featureType: "transit", stylers: [{ visibility: "off" }] },
-          ],
-        });
-        mountMarkers(map);
-      }} />
-      <div className="map-footnote"><span className="flex items-center gap-2"><Layers3 size={14} className="text-cyan-300" /> Camadas: cobertura · risco · exposição</span><span className="font-mono text-[10px] text-slate-500">LIVE · SYNC 09:41:22 UTC</span></div>
-    </div>
-  );
+  return <MapView points={municipalities} selected={selected} onSelect={onSelect} />;
 }
 
 function CoveragePanel() {

@@ -5,7 +5,8 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 ## O que está implementado
 
 - Console operacional em dark mode com linguagem visual de Defesa Civil + IA.
-- Mapa real do Brasil usando o componente Google Maps provisionado pelo ambiente Manus.
+- Mapa do Brasil com Google Maps via `iframe` `output=embed`, sem API key exposta no front-end.
+- Camada GeoHidro AI sobreposta ao iframe, calculada em Web Mercator a partir de latitude/longitude.
 - Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
 - Marcadores com estados de cobertura: monitorado, candidato e piloto.
 - Seleção de município integrada ao dashboard e à fila operacional.
@@ -22,7 +23,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Tailwind CSS 4
 - shadcn/ui
 - Lucide React
-- Google Maps JavaScript API via o `MapView` provisionado em `client/src/components/Map.tsx`
+- Google Maps via iframe sem chave + camada React de marcadores em `client/src/components/Map.tsx`
 - Wouter para navegação client-side
 
 ## Executar localmente
@@ -39,9 +40,11 @@ pnpm run check
 pnpm run build
 ```
 
-## Google Maps
+## Google Maps sem API key
 
-A integração usa o proxy de mapas configurado pelo ambiente, sem solicitar uma chave ao usuário. O componente `MapView` carrega as bibliotecas `marker`, `places`, `geocoding` e `geometry`. Os marcadores são criados com `google.maps.marker.AdvancedMarkerElement` e recebem conteúdo HTML customizado para representar a cobertura GeoHidro AI.
+O mapa-base usa `https://maps.google.com/maps?...&output=embed`, conforme o exemplo fornecido, e não expõe API key. Como o conteúdo do iframe pertence a outro domínio, a aplicação não tenta inserir objetos JavaScript dentro do Google Maps. Em vez disso, o React mantém uma camada transparente acima do iframe e calcula a posição dos municípios por latitude/longitude usando projeção Web Mercator, com centro e zoom fixos iguais aos parâmetros do iframe.
+
+A camada oferece círculos de risco, pulsação para sinalização, tooltip hidrológico, seleção, filtro por UF e filtro por risco. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo. Como o iframe é isolado, pan e zoom livres do Google Maps ficam desabilitados para manter os marcadores alinhados; para navegação geográfica totalmente sincronizada, a evolução de produção deve usar um mapa controlável por SDK em um ambiente com credencial restrita por domínio.
 
 Em produção, os dados demonstrativos devem ser substituídos por uma API segura ou serviço de streaming que forneça coordenadas, status de cobertura, risco, timestamp, qualidade e proveniência. A aplicação estática não deve conter credenciais privadas nem emitir alertas públicos autonomamente.
 

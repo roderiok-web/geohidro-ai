@@ -1,188 +1,118 @@
-/**
- * GOOGLE MAPS FRONTEND INTEGRATION - ESSENTIAL GUIDE
- *
- * USAGE FROM PARENT COMPONENT:
- * ======
- *
- * const mapRef = useRef<google.maps.Map | null>(null);
- *
- * <MapView
- *   initialCenter={{ lat: 40.7128, lng: -74.0060 }}
- *   initialZoom={15}
- *   onMapReady={(map) => {
- *     mapRef.current = map; // Store to control map from parent anytime, google map itself is in charge of the re-rendering, not react state.
- * </MapView>
- *
- * ======
- * Available Libraries and Core Features:
- * -------------------------------
- * 📍 MARKER (from `marker` library)
- * - Attaches to map using { map, position }
- * new google.maps.marker.AdvancedMarkerElement({
- *   map,
- *   position: { lat: 37.7749, lng: -122.4194 },
- *   title: "San Francisco",
- * });
- *
- * -------------------------------
- * 🏢 PLACES (from `places` library)
- * - Does not attach directly to map; use data with your map manually.
- * const place = new google.maps.places.Place({ id: PLACE_ID });
- * await place.fetchFields({ fields: ["displayName", "location"] });
- * map.setCenter(place.location);
- * new google.maps.marker.AdvancedMarkerElement({ map, position: place.location });
- *
- * -------------------------------
- * 🧭 GEOCODER (from `geocoding` library)
- * - Standalone service; manually apply results to map.
- * const geocoder = new google.maps.Geocoder();
- * geocoder.geocode({ address: "New York" }, (results, status) => {
- *   if (status === "OK" && results[0]) {
- *     map.setCenter(results[0].geometry.location);
- *     new google.maps.marker.AdvancedMarkerElement({
- *       map,
- *       position: results[0].geometry.location,
- *     });
- *   }
- * });
- *
- * -------------------------------
- * 📐 GEOMETRY (from `geometry` library)
- * - Pure utility functions; not attached to map.
- * const dist = google.maps.geometry.spherical.computeDistanceBetween(p1, p2);
- *
- * -------------------------------
- * 🛣️ ROUTES (from `routes` library)
- * - Combines DirectionsService (standalone) + DirectionsRenderer (map-attached)
- * const directionsService = new google.maps.DirectionsService();
- * const directionsRenderer = new google.maps.DirectionsRenderer({ map });
- * directionsService.route(
- *   { origin, destination, travelMode: "DRIVING" },
- *   (res, status) => status === "OK" && directionsRenderer.setDirections(res)
- * );
- *
- * -------------------------------
- * 🌦️ MAP LAYERS (attach directly to map)
- * - new google.maps.TrafficLayer().setMap(map);
- * - new google.maps.TransitLayer().setMap(map);
- * - new google.maps.BicyclingLayer().setMap(map);
- *
- * -------------------------------
- * ✅ SUMMARY
- * - “map-attached” → AdvancedMarkerElement, DirectionsRenderer, Layers.
- * - “standalone” → Geocoder, DirectionsService, DistanceMatrixService, ElevationService.
- * - “data-only” → Place, Geometry utilities.
- */
-
-/// <reference types="@types/google.maps" />
-
-import { useEffect, useRef, useState } from "react";
-import { usePersistFn } from "@/hooks/usePersistFn";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
 
-declare global {
-  interface Window {
-    google?: typeof google;
-    __geohidroMapsPromise?: Promise<void>;
-  }
-}
+export type CoveragePoint = {
+  name: string;
+  state: string;
+  lat: number;
+  lng: number;
+  risk: string;
+  type: string;
+  score: number;
+  coverage: string;
+  color: string;
+};
 
-const API_KEY = String(import.meta.env.VITE_FRONTEND_FORGE_API_KEY || "").trim();
-const FORGE_BASE_URL = String(
-  import.meta.env.VITE_FRONTEND_FORGE_API_URL || "https://forge.manus.ai",
-).replace(/\/+$/, "");
-const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
-
-function loadMapScript(): Promise<void> {
-  if (window.google?.maps) return Promise.resolve();
-  if (window.__geohidroMapsPromise) return window.__geohidroMapsPromise;
-
-  window.__geohidroMapsPromise = new Promise<void>((resolve, reject) => {
-    const existingScript = document.getElementById("geohidro-google-maps") as HTMLScriptElement | null;
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(), { once: true });
-      existingScript.addEventListener("error", () => reject(new Error("Google Maps proxy could not be reached.")), { once: true });
-      return;
-    }
-
-    const script = document.createElement("script");
-    const params = new URLSearchParams({ v: "weekly", libraries: "marker,places,geocoding,geometry" });
-    if (API_KEY) params.set("key", API_KEY);
-    script.id = "geohidro-google-maps";
-    script.src = `${MAPS_PROXY_URL}/maps/api/js?${params.toString()}`;
-    script.async = true;
-    script.defer = true;
-    script.crossOrigin = "anonymous";
-    script.onload = () => {
-      if (window.google?.maps) resolve();
-      else reject(new Error("Google Maps loaded without the maps namespace."));
-    };
-    script.onerror = () => reject(new Error(`Google Maps proxy request failed: ${MAPS_PROXY_URL}`));
-    document.head.appendChild(script);
-  });
-
-  window.__geohidroMapsPromise.catch(() => {
-    window.__geohidroMapsPromise = undefined;
-  });
-  return window.__geohidroMapsPromise;
-}
-
-interface MapViewProps {
+type IframeCoverageMapProps = {
+  points: CoveragePoint[];
+  selected: string;
+  onSelect: (name: string) => void;
   className?: string;
-  initialCenter?: google.maps.LatLngLiteral;
-  initialZoom?: number;
-  onMapReady?: (map: google.maps.Map) => void;
+};
+
+const MAP_CONFIG = { center: { lat: -14.2, lng: -51.9 }, zoom: 4, tileSize: 256 };
+
+function mercator(lat: number, lng: number, zoom: number) {
+  const scale = MAP_CONFIG.tileSize * 2 ** zoom;
+  const safeLat = Math.max(-85.05112878, Math.min(85.05112878, lat));
+  const sin = Math.sin((safeLat * Math.PI) / 180);
+  return {
+    x: ((lng + 180) / 360) * scale,
+    y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale,
+  };
 }
 
-export function MapView({
-  className,
-  initialCenter = { lat: 37.7749, lng: -122.4194 },
-  initialZoom = 12,
-  onMapReady,
-}: MapViewProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<google.maps.Map | null>(null);
-  const [mapError, setMapError] = useState<string | null>(null);
+function projectPoint(point: CoveragePoint, width: number, height: number) {
+  const center = mercator(MAP_CONFIG.center.lat, MAP_CONFIG.center.lng, MAP_CONFIG.zoom);
+  const current = mercator(point.lat, point.lng, MAP_CONFIG.zoom);
+  const scale = Math.min(width / 900, height / 440);
+  return {
+    left: width / 2 + (current.x - center.x) * scale,
+    top: height / 2 + (current.y - center.y) * scale,
+  };
+}
 
-  const init = usePersistFn(async () => {
-    try {
-      await loadMapScript();
-      if (!mapContainer.current || !window.google?.maps) return;
-      map.current = new window.google.maps.Map(mapContainer.current, {
-        zoom: initialZoom,
-        center: initialCenter,
-        mapTypeControl: true,
-        fullscreenControl: true,
-        zoomControl: true,
-        streetViewControl: true,
-        mapId: "DEMO_MAP_ID",
-      });
-      onMapReady?.(map.current);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Google Maps indisponível no momento.";
-      setMapError(message);
-      console.warn("GeoHidro AI: Google Maps unavailable", error);
-    }
-  });
+export function MapView({ points, selected, onSelect, className }: IframeCoverageMapProps) {
+  const [viewport, setViewport] = useState({ width: 900, height: 440 });
+  const [ufFilter, setUfFilter] = useState("Todas");
+  const [riskFilter, setRiskFilter] = useState("Todos");
+  const [lastSync, setLastSync] = useState(() => new Date());
+
+  const ufs = useMemo(() => ["Todas", ...Array.from(new Set(points.map((point) => point.state))).sort()], [points]);
+  const risks = useMemo(() => ["Todos", ...Array.from(new Set(points.map((point) => point.risk))).sort()], [points]);
+  const filteredPoints = useMemo(
+    () => points.filter((point) => (ufFilter === "Todas" || point.state === ufFilter) && (riskFilter === "Todos" || point.risk === riskFilter)),
+    [points, riskFilter, ufFilter],
+  );
 
   useEffect(() => {
-    init();
-  }, [init]);
+    const updateSize = () => {
+      const element = document.querySelector<HTMLElement>(".iframe-map-frame");
+      if (element) setViewport({ width: element.clientWidth, height: element.clientHeight });
+    };
+    updateSize();
+    const observer = new ResizeObserver(updateSize);
+    const element = document.querySelector<HTMLElement>(".iframe-map-frame");
+    if (element) observer.observe(element);
+    const timer = window.setInterval(() => setLastSync(new Date()), 30000);
+    return () => {
+      observer.disconnect();
+      window.clearInterval(timer);
+    };
+  }, []);
 
   return (
-    <div ref={mapContainer} className={cn("w-full h-[500px]", className)}>
-      {mapError && (
-        <div className="gh-map-error" role="status">
-          <strong>Mapa temporariamente indisponível</strong>
-          <span>O monitoramento continua acessível pela fila e pelos indicadores.</span>
-          <small>{messageForMapError(mapError)}</small>
+    <div className={cn("map-stage iframe-map-stage", className)}>
+      <div className="map-toolbar iframe-map-toolbar">
+        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · camada GeoHidro AI</span></div>
+        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#ef4444" }} /> Crítico/alto</span><span><i className="legend-dot" style={{ background: "#ffc857" }} /> Monitorado</span><span><i className="legend-dot" style={{ background: "#6ee7b7" }} /> Candidato</span></div>
+      </div>
+      <div className="iframe-map-frame">
+        <iframe
+          title="Google Maps — Brasil e municípios GeoHidro AI"
+          className="iframe-google-map"
+          src="https://maps.google.com/maps?ll=-14.2,-51.9&z=4&output=embed"
+          loading="lazy"
+          allowFullScreen
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+        <div className="iframe-city-layer" aria-label="Municípios monitorados pelo GeoHidro AI">
+          {filteredPoints.map((point) => {
+            const position = projectPoint(point, viewport.width, viewport.height);
+            const isSelected = selected === point.name;
+            return (
+              <button
+                key={point.name}
+                type="button"
+                className={`iframe-city-marker ${isSelected ? "selected" : ""}`}
+                style={{ left: `${position.left}px`, top: `${position.top}px`, "--marker-color": point.color } as CSSProperties}
+                onClick={() => onSelect(point.name)}
+                aria-label={`${point.name}, ${point.state}, ${point.coverage}, risco ${point.risk}`}
+              >
+                <span className="iframe-city-pulse" />
+                <span className="iframe-city-circle" />
+                <span className="iframe-city-tooltip"><strong>{point.name} · {point.state}</strong><small>{point.coverage} · {point.risk} · score {point.score}</small><em>{point.type}</em></span>
+              </button>
+            );
+          })}
         </div>
-      )}
+        <div className="iframe-map-filters">
+          <label>UF<select value={ufFilter} onChange={(event) => setUfFilter(event.target.value)}>{ufs.map((uf) => <option key={uf}>{uf}</option>)}</select></label>
+          <label>Risco<select value={riskFilter} onChange={(event) => setRiskFilter(event.target.value)}>{risks.map((risk) => <option key={risk}>{risk}</option>)}</select></label>
+          <span className="iframe-map-count">{filteredPoints.length} / {points.length} municípios</span>
+        </div>
+      </div>
+      <div className="map-footnote"><span className="flex items-center gap-2">Círculos por latitude/longitude · sem API key no front-end</span><span className="font-mono text-[10px] text-slate-500">SYNC {lastSync.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</span></div>
     </div>
   );
-}
-
-function messageForMapError(error: string) {
-  if (error.includes("proxy")) return "Verifique a disponibilidade do proxy de mapas do ambiente.";
-  return "A integração será reestabelecida quando o serviço estiver disponível.";
 }
