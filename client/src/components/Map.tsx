@@ -77,8 +77,8 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
   return (
     <div className={cn("map-stage iframe-map-stage", className)}>
       <div className="map-toolbar iframe-map-toolbar">
-        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · Brasil · viewport fixo</span></div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#ef4444" }} /> Crítico/alto</span><span><i className="legend-dot" style={{ background: "#ffc857" }} /> Monitorado</span><span><i className="legend-dot" style={{ background: "#6ee7b7" }} /> Candidato</span></div>
+        <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · Brasil</span></div>
+        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#d9283e" }} /> Alto</span><span><i className="legend-dot" style={{ background: "#F37021" }} /> Crítico</span><span><i className="legend-dot" style={{ background: "#1d5fa7" }} /> Moderado</span></div>
       </div>
       <div className="iframe-map-frame fixed-brazil-viewport">
         <iframe
@@ -111,7 +111,6 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
             );
           })}
         </div>
-        <div className="fixed-map-badge">Brasil · todos os estados · visão nacional</div>
         <div className="iframe-map-filters">
           <label>UF<select value={ufFilter} onChange={(event) => setUfFilter(event.target.value)}>{ufs.map((uf) => <option key={uf}>{uf}</option>)}</select></label>
           <label>Risco<select value={riskFilter} onChange={(event) => setRiskFilter(event.target.value)}>{risks.map((risk) => <option key={risk}>{risk}</option>)}</select></label>

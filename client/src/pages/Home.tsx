@@ -45,28 +45,30 @@ const coverageData = [
 ];
 
 const municipalities = [
-  { name: "Petrópolis", state: "RJ", region: "SE", lat: -22.505, lng: -43.178, risk: "Crítico", type: "Movimento de massa", score: 96.5, rain: "125mm", model: "CNN Espacial", coverage: "Piloto", color: "#e53935" },
-  { name: "Blumenau", state: "SC", region: "S", lat: -26.919, lng: -49.066, risk: "Alto", type: "Inundação", score: 81, rain: "85mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#F37021" },
-  { name: "São Sebastião", state: "SP", region: "SE", lat: -23.760, lng: -45.412, risk: "Normal", type: "Movimento de massa", score: 12, rain: "10mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
-  { name: "Recife", state: "PE", region: "NE", lat: -8.047, lng: -34.877, risk: "Alto", type: "Alagamento", score: 75.4, rain: "60mm", model: "Ensemble", coverage: "Monitorado", color: "#F37021" },
-  { name: "Belo Horizonte", state: "MG", region: "SE", lat: -19.916, lng: -43.934, risk: "Normal", type: "Movimento de massa", score: 5.2, rain: "0mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
-  { name: "Manaus", state: "AM", region: "N", lat: -3.119, lng: -60.021, risk: "Normal", type: "Cheia fluvial", score: 22.1, rain: "15mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
-  { name: "Goiânia", state: "GO", region: "CO", lat: -16.686, lng: -49.264, risk: "Normal", type: "Enxurrada", score: 8, rain: "0mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
-  { name: "Rio Branco", state: "AC", region: "N", lat: -9.975, lng: -67.824, risk: "Crítico", type: "Cheia fluvial", score: 94.2, rain: "Nível Rio Crítico", model: "GNN Bacias", coverage: "Piloto", color: "#e53935" },
-  { name: "Porto Alegre", state: "RS", region: "S", lat: -30.034, lng: -51.217, risk: "Alto", type: "Inundação", score: 88.3, rain: "100mm", model: "Ensemble", coverage: "Piloto", color: "#F37021" },
-  { name: "Salvador", state: "BA", region: "NE", lat: -12.971, lng: -38.512, risk: "Normal", type: "Alagamento", score: 18.5, rain: "5mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
-  { name: "Vitória", state: "ES", region: "SE", lat: -20.315, lng: -40.312, risk: "Normal", type: "Alagamento", score: 10, rain: "2mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Petrópolis", state: "RJ", region: "SE", lat: -22.505, lng: -43.178, risk: "Crítico", type: "Movimento de massa", score: 96.5, rain: "125mm", model: "CNN Espacial", coverage: "Piloto", color: "#F37021" },
+  { name: "Blumenau", state: "SC", region: "S", lat: -26.919, lng: -49.066, risk: "Alto", type: "Inundação", score: 81, rain: "85mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#d9283e" },
+  { name: "São Sebastião", state: "SP", region: "SE", lat: -23.760, lng: -45.412, risk: "Moderado", type: "Movimento de massa", score: 12, rain: "10mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Recife", state: "PE", region: "NE", lat: -8.047, lng: -34.877, risk: "Alto", type: "Alagamento", score: 75.4, rain: "60mm", model: "Ensemble", coverage: "Monitorado", color: "#d9283e" },
+  { name: "Belo Horizonte", state: "MG", region: "SE", lat: -19.916, lng: -43.934, risk: "Moderado", type: "Movimento de massa", score: 5.2, rain: "0mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Manaus", state: "AM", region: "N", lat: -3.119, lng: -60.021, risk: "Moderado", type: "Cheia fluvial", score: 22.1, rain: "15mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Goiânia", state: "GO", region: "CO", lat: -16.686, lng: -49.264, risk: "Moderado", type: "Enxurrada", score: 8, rain: "0mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Rio Branco", state: "AC", region: "N", lat: -9.975, lng: -67.824, risk: "Crítico", type: "Cheia fluvial", score: 94.2, rain: "Nível Rio Crítico", model: "GNN Bacias", coverage: "Piloto", color: "#F37021" },
+  { name: "Porto Alegre", state: "RS", region: "S", lat: -30.034, lng: -51.217, risk: "Alto", type: "Inundação", score: 88.3, rain: "100mm", model: "Ensemble", coverage: "Piloto", color: "#d9283e" },
+  { name: "Salvador", state: "BA", region: "NE", lat: -12.971, lng: -38.512, risk: "Moderado", type: "Alagamento", score: 18.5, rain: "5mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Vitória", state: "ES", region: "SE", lat: -20.315, lng: -40.312, risk: "Moderado", type: "Alagamento", score: 10, rain: "2mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
 ] satisfies CoveragePoint[];
 
 const alertsSeed = [
-  { id: "GH-2409", place: "Petrópolis · RJ", type: "Movimento de massa", level: "Alto", probability: 86, lead: "04h 18m", status: "Pendente", color: "coral", icon: TriangleAlert, reason: "Chuva antecedente + solo saturado" },
-  { id: "GH-2398", place: "Blumenau · SC", type: "Elevação de nível", level: "Moderado", probability: 71, lead: "07h 42m", status: "Em análise", color: "amber", icon: Waves, reason: "Precipitação acumulada na bacia" },
-  { id: "GH-2386", place: "Porto Alegre · RS", type: "Inundação", level: "Crítico", probability: 92, lead: "02h 05m", status: "Pendente", color: "red", icon: CloudRain, reason: "Vazão acima do percentil 95" },
+  { id: "GH-2409", place: "Petrópolis · RJ", type: "Movimento de massa", level: "Alto", probability: 86, lead: "04h 18m", status: "Pendente", color: "red", icon: TriangleAlert, reason: "Chuva antecedente + solo saturado" },
+  { id: "GH-2398", place: "Blumenau · SC", type: "Elevação de nível", level: "Moderado", probability: 71, lead: "07h 42m", status: "Em análise", color: "blue", icon: Waves, reason: "Precipitação acumulada na bacia" },
+  { id: "GH-2386", place: "Porto Alegre · RS", type: "Inundação", level: "Crítico", probability: 92, lead: "02h 05m", status: "Pendente", color: "coral", icon: CloudRain, reason: "Vazão acima do percentil 95" },
 ];
 
 type AlertItem = (typeof alertsSeed)[number];
 
 type View = "overview" | "municipalities" | "alerts" | "architecture";
+
+const riskClass = (risk: string) => risk === "Alto" ? "red" : risk === "Crítico" ? "coral" : "blue";
 
 function MetricCard({ label, value, detail, accent, icon: Icon, progress }: { label: string; value: string; detail: string; accent: string; icon: typeof Activity; progress?: number }) {
   return (
@@ -115,10 +117,14 @@ function CoveragePanel() {
 }
 
 function AlertQueue({ alerts, onAction, compact = false }: { alerts: AlertItem[]; onAction: (id: string, action: string) => void; compact?: boolean }) {
+  const orderedAlerts = [...alerts].sort((a, b) => {
+    const priority: Record<string, number> = { Alto: 0, Crítico: 1, Moderado: 2 };
+    return (priority[a.level] ?? 99) - (priority[b.level] ?? 99) || b.probability - a.probability;
+  });
   return (
     <div className={`gh-card alert-panel ${compact ? "compact" : ""}`}>
       <div className="flex items-start justify-between"><div><p className="eyebrow">Human-in-the-loop</p><h3 className="panel-title mt-1">Fila operacional</h3></div><span className="status-chip coral"><span className="pulse-dot" /> {alerts.filter((a) => a.status !== "Aprovado").length} pendentes</span></div>
-      <div className="mt-5 space-y-3">{alerts.map((alert) => { const Icon = alert.icon; return <div className="alert-row" key={alert.id}><div className={`alert-icon ${alert.color}`}><Icon size={16} /></div><div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-2"><div><p className="text-sm font-semibold text-slate-100">{alert.place}</p><p className="mt-0.5 text-[11px] text-slate-500">{alert.type} · {alert.id}</p></div><span className={`risk-pill ${alert.color}`}>{alert.level}</span></div><div className="mt-3 flex items-center gap-4 text-[11px] text-slate-400"><span className="flex items-center gap-1"><Gauge size={12} className="text-cyan-300" /> {alert.probability}%</span><span className="flex items-center gap-1"><Timer size={12} className="text-amber-300" /> {alert.lead}</span><span className="truncate text-slate-500">{alert.reason}</span></div>{!compact && <div className="mt-3 flex items-center gap-2"><Button size="sm" className="h-7 bg-cyan-400 px-3 text-[11px] font-bold text-slate-950 hover:bg-cyan-300" onClick={() => onAction(alert.id, "aprovar")}><Check size={13} /> Aprovar</Button><Button size="sm" variant="outline" className="h-7 border-white/10 bg-transparent px-3 text-[11px] text-slate-300 hover:bg-white/5" onClick={() => onAction(alert.id, "reavaliar")}><RefreshCw size={13} /> Reavaliar</Button><Button size="sm" variant="outline" className="h-7 border-white/10 bg-transparent px-2 text-slate-400 hover:bg-white/5" onClick={() => onAction(alert.id, "rejeitar")}><X size={13} /></Button></div>}</div></div>; })}</div>
+      <div className="mt-5 space-y-3">{orderedAlerts.map((alert) => { const Icon = alert.icon; return <div className="alert-row" key={alert.id}><div className={`alert-icon ${alert.color}`}><Icon size={16} /></div><div className="min-w-0 flex-1"><div className="flex items-center justify-between gap-2"><div><p className="text-sm font-semibold text-slate-100">{alert.place}</p><p className="mt-0.5 text-[11px] text-slate-500">{alert.type} · {alert.id}</p></div><span className={`risk-pill ${alert.color}`}>{alert.level}</span></div><div className="mt-3 flex items-center gap-4 text-[11px] text-slate-400"><span className="flex items-center gap-1"><Gauge size={12} className="text-cyan-300" /> {alert.probability}%</span><span className="flex items-center gap-1"><Timer size={12} className="text-amber-300" /> {alert.lead}</span><span className="truncate text-slate-500">{alert.reason}</span></div>{!compact && <div className="mt-3 flex items-center gap-2"><Button size="sm" className="h-7 bg-cyan-400 px-3 text-[11px] font-bold text-slate-950 hover:bg-cyan-300" onClick={() => onAction(alert.id, "aprovar")}><Check size={13} /> Aprovar</Button><Button size="sm" variant="outline" className="h-7 border-white/10 bg-transparent px-3 text-[11px] text-slate-300 hover:bg-white/5" onClick={() => onAction(alert.id, "reavaliar")}><RefreshCw size={13} /> Reavaliar</Button><Button size="sm" variant="outline" className="h-7 border-white/10 bg-transparent px-2 text-slate-400 hover:bg-white/5" onClick={() => onAction(alert.id, "rejeitar")}><X size={13} /></Button></div>}</div></div>; })}</div>
       <button className="panel-link mt-5" onClick={() => toast.info("A fila completa de alertas será conectada ao serviço operacional.")}><span>Ver todos os alertas</span><ArrowUpRight size={14} /></button>
     </div>
   );
@@ -146,7 +152,11 @@ function ArchitectureView() {
 }
 
 function MunicipalitiesView({ onSelect }: { onSelect: (name: string) => void }) {
-  return <div className="space-y-6"><div className="page-heading"><div><p className="eyebrow">Catálogo territorial</p><h2>Municípios em foco.</h2><p>Camada demonstrativa para priorização da expansão assistida por IA.</p></div><Button className="bg-cyan-400 font-bold text-slate-950 hover:bg-cyan-300" onClick={() => toast.info("Exportação demonstrativa", { description: "O relatório será gerado com a linhagem das fontes." })}>Exportar visão <ArrowUpRight size={15} /></Button></div><div className="gh-card overflow-hidden"><div className="table-toolbar"><div className="search-box"><Search size={15} /><input placeholder="Buscar município ou estado" /></div><button className="filter-button"><SlidersHorizontal size={14} /> Filtros <span>3</span></button></div><div className="overflow-x-auto"><table className="gh-table"><thead><tr><th>Município</th><th>Tipologia dominante</th><th>Risco</th><th>Cobertura</th><th>Score GeoHidro</th><th /></tr></thead><tbody>{municipalities.map((city) => <tr key={city.name}><td><button className="table-place" onClick={() => onSelect(city.name)}><span className="table-avatar" style={{ background: `${city.color}20`, color: city.color }}>{city.state}</span><span><strong>{city.name}</strong><small>{city.state} · atualizado há 6 min</small></span></button></td><td>{city.type}</td><td><span className={`risk-pill ${city.score > 85 ? "red" : city.score > 70 ? "amber" : "mint"}`}>{city.risk}</span></td><td><span className={`coverage-label ${city.coverage.toLowerCase()}`}>{city.coverage}</span></td><td><div className="score-cell"><span>{city.score}</span><div><i style={{ width: `${city.score}%` }} /></div></div></td><td><MoreHorizontal size={17} className="text-slate-500" /></td></tr>)}</tbody></table></div></div></div>;
+  const [query, setQuery] = useState("");
+  const normalizedQuery = query.trim().toLocaleLowerCase("pt-BR");
+  const filteredMunicipalities = municipalities.filter((city) => `${city.name} ${city.state}`.toLocaleLowerCase("pt-BR").includes(normalizedQuery));
+
+  return <div className="space-y-6"><div className="page-heading"><div><p className="eyebrow">Catálogo territorial</p><h2>Municípios em foco.</h2><p>Camada demonstrativa para priorização da expansão assistida por IA.</p></div><Button className="bg-cyan-400 font-bold text-slate-950 hover:bg-cyan-300" onClick={() => toast.info("Exportação demonstrativa", { description: "O relatório será gerado com a linhagem das fontes." })}>Exportar visão <ArrowUpRight size={15} /></Button></div><div className="gh-card overflow-hidden"><div className="table-toolbar"><div className="search-box"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar município ou estado" aria-label="Buscar município ou estado" /></div><button className="filter-button"><SlidersHorizontal size={14} /> Filtros <span>{filteredMunicipalities.length}</span></button></div><div className="overflow-x-auto"><table className="gh-table"><thead><tr><th>Município</th><th>Tipologia dominante</th><th>Risco</th><th>Cobertura</th><th>Score GeoHidro</th><th /></tr></thead><tbody>{filteredMunicipalities.length > 0 ? filteredMunicipalities.map((city) => <tr key={city.name}><td><button className="table-place" onClick={() => onSelect(city.name)}><span className="table-avatar" style={{ background: `${city.color}20`, color: city.color }}>{city.state}</span><span><strong>{city.name}</strong><small>{city.state} · atualizado há 6 min</small></span></button></td><td>{city.type}</td><td><span className={`risk-pill ${riskClass(city.risk)}`}>{city.risk}</span></td><td><span className={`coverage-label ${city.coverage.toLowerCase()}`}>{city.coverage}</span></td><td><div className="score-cell"><span>{city.score}</span><div><i style={{ width: `${city.score}%` }} /></div></div></td><td><MoreHorizontal size={17} className="text-slate-500" /></td></tr>) : <tr><td colSpan={6} className="py-10 text-center text-xs text-slate-500">Nenhum município ou estado encontrado.</td></tr>}</tbody></table></div></div></div>;
 }
 
 function AppOverview({ selected, onSelect, alerts, onAction }: { selected: string; onSelect: (name: string) => void; alerts: AlertItem[]; onAction: (id: string, action: string) => void }) {
@@ -155,7 +165,7 @@ function AppOverview({ selected, onSelect, alerts, onAction }: { selected: strin
 
 export default function Home() {
   const [view, setView] = useState<View>("overview");
-  const [selected, setSelected] = useState("Petrópolis");
+  const [selected, setSelected] = useState("");
   const [alerts, setAlerts] = useState<AlertItem[]>(alertsSeed);
   const [simulating, setSimulating] = useState(false);
   const selectedCity = useMemo(() => municipalities.find((item) => item.name === selected) ?? municipalities[0], [selected]);
