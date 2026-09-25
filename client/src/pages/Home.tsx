@@ -45,12 +45,17 @@ const coverageData = [
 ];
 
 const municipalities = [
-  { name: "Petrópolis", state: "RJ", lat: -22.52, lng: -43.19, risk: "Alto", type: "Movimento de massa", score: 86, coverage: "Piloto", color: "#ef4444" },
-  { name: "Blumenau", state: "SC", lat: -26.92, lng: -49.06, risk: "Alto", type: "Inundação", score: 79, coverage: "Monitorado", color: "#ffc857" },
-  { name: "Manaus", state: "AM", lat: -3.12, lng: -60.02, risk: "Moderado", type: "Cheia fluvial", score: 54, coverage: "Candidato", color: "#6ee7b7" },
-  { name: "Recife", state: "PE", lat: -8.05, lng: -34.88, risk: "Alto", type: "Alagamento", score: 73, coverage: "Monitorado", color: "#ffc857" },
-  { name: "São Luís", state: "MA", lat: -2.53, lng: -44.30, risk: "Moderado", type: "Enxurrada", score: 47, coverage: "Candidato", color: "#6ee7b7" },
-  { name: "Porto Alegre", state: "RS", lat: -30.03, lng: -51.23, risk: "Crítico", type: "Inundação", score: 92, coverage: "Piloto", color: "#ef4444" },
+  { name: "Petrópolis", state: "RJ", region: "SE", lat: -22.505, lng: -43.178, risk: "Crítico", type: "Movimento de massa", score: 96.5, rain: "125mm", model: "CNN Espacial", coverage: "Piloto", color: "#e53935" },
+  { name: "Blumenau", state: "SC", region: "S", lat: -26.919, lng: -49.066, risk: "Alto", type: "Inundação", score: 81, rain: "85mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#F37021" },
+  { name: "São Sebastião", state: "SP", region: "SE", lat: -23.760, lng: -45.412, risk: "Normal", type: "Movimento de massa", score: 12, rain: "10mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Recife", state: "PE", region: "NE", lat: -8.047, lng: -34.877, risk: "Alto", type: "Alagamento", score: 75.4, rain: "60mm", model: "Ensemble", coverage: "Monitorado", color: "#F37021" },
+  { name: "Belo Horizonte", state: "MG", region: "SE", lat: -19.916, lng: -43.934, risk: "Normal", type: "Movimento de massa", score: 5.2, rain: "0mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Manaus", state: "AM", region: "N", lat: -3.119, lng: -60.021, risk: "Normal", type: "Cheia fluvial", score: 22.1, rain: "15mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Goiânia", state: "GO", region: "CO", lat: -16.686, lng: -49.264, risk: "Normal", type: "Enxurrada", score: 8, rain: "0mm", model: "LSTM Hidro", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Rio Branco", state: "AC", region: "N", lat: -9.975, lng: -67.824, risk: "Crítico", type: "Cheia fluvial", score: 94.2, rain: "Nível Rio Crítico", model: "GNN Bacias", coverage: "Piloto", color: "#e53935" },
+  { name: "Porto Alegre", state: "RS", region: "S", lat: -30.034, lng: -51.217, risk: "Alto", type: "Inundação", score: 88.3, rain: "100mm", model: "Ensemble", coverage: "Piloto", color: "#F37021" },
+  { name: "Salvador", state: "BA", region: "NE", lat: -12.971, lng: -38.512, risk: "Normal", type: "Alagamento", score: 18.5, rain: "5mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
+  { name: "Vitória", state: "ES", region: "SE", lat: -20.315, lng: -40.312, risk: "Normal", type: "Alagamento", score: 10, rain: "2mm", model: "CNN Espacial", coverage: "Monitorado", color: "#1d5fa7" },
 ] satisfies CoveragePoint[];
 
 const alertsSeed = [

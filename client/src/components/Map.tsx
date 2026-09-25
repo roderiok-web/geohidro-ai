@@ -4,11 +4,14 @@ import { cn } from "@/lib/utils";
 export type CoveragePoint = {
   name: string;
   state: string;
+  region: string;
   lat: number;
   lng: number;
   risk: string;
   type: string;
   score: number;
+  rain: string;
+  model: string;
   coverage: string;
   color: string;
 };
@@ -20,11 +23,8 @@ type IframeCoverageMapProps = {
   className?: string;
 };
 
-const MAP_CONFIG = { center: { lat: -14.2, lng: -51.9 }, zoom: 4, tileSize: 256 };
-const MAP_URL = "https://maps.google.com/maps?ll=-14.2,-51.9&z=4&output=embed";
-// The Embed viewport reserves a small top band for Google labels/controls.
-// Keep longitude mathematically centered and compensate only the latitude axis.
-const MAP_CALIBRATION = { verticalOffsetRatio: 0.03, maxVerticalOffset: 24 };
+const MAP_CONFIG = { center: { lat: -14.235, lng: -51.9253 }, zoom: 4, tileSize: 256 };
+const MAP_URL = "https://maps.google.com/maps?ll=-14.2350,-51.9253&z=4&output=embed";
 
 function mercator(lat: number, lng: number, zoom: number) {
   const scale = MAP_CONFIG.tileSize * 2 ** zoom;
@@ -39,11 +39,9 @@ function mercator(lat: number, lng: number, zoom: number) {
 function projectPoint(point: CoveragePoint, width: number, height: number) {
   const centerWorld = mercator(MAP_CONFIG.center.lat, MAP_CONFIG.center.lng, MAP_CONFIG.zoom);
   const currentWorld = mercator(point.lat, point.lng, MAP_CONFIG.zoom);
-  const scale = Math.min(width / 900, height / 440);
-  const verticalOffset = Math.min(MAP_CALIBRATION.maxVerticalOffset, Math.max(12, width * MAP_CALIBRATION.verticalOffsetRatio));
   return {
-    left: width / 2 + (currentWorld.x - centerWorld.x) * scale,
-    top: height / 2 + (currentWorld.y - centerWorld.y) * scale + verticalOffset,
+    left: width / 2 + (currentWorld.x - centerWorld.x),
+    top: height / 2 + (currentWorld.y - centerWorld.y),
   };
 }
 
@@ -87,7 +85,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
           title="Google Maps — Brasil, estados e municípios GeoHidro AI"
           className="iframe-google-map"
           src={MAP_URL}
-          loading="lazy"
+          loading="eager"
           allowFullScreen
           referrerPolicy="no-referrer-when-downgrade"
           tabIndex={-1}
@@ -108,7 +106,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
               >
                 <span className="iframe-city-pulse" />
                 <span className="iframe-city-circle" />
-                <span className="iframe-city-tooltip"><strong>{point.name} · {point.state}</strong><small>{point.coverage} · {point.risk} · score {point.score}</small><em>{point.type}</em></span>
+                <span className="iframe-city-tooltip"><strong>{point.name} · {point.state}</strong><small>{point.coverage} · {point.risk} · P(risco) {point.score}%</small><em>{point.type} · {point.model} · {point.rain}</em></span>
               </button>
             );
           })}
