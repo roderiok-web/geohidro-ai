@@ -7,7 +7,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Console operacional em dark mode com linguagem visual de Defesa Civil + IA.
 - Mapa do Brasil com Google Maps via `iframe` `output=embed`, sem API key exposta no front-end.
 - Camada GeoHidro AI sobreposta ao iframe, calculada em Web Mercator a partir de latitude/longitude.
-- Navegação responsiva por arraste, roda do mouse e controles de zoom; cada ação atualiza centro, zoom, URL do iframe e projeção dos marcadores.
+- Viewport nacional fixo, sem arraste ou zoom, garantindo a visualização simultânea do Brasil e de seus estados.
 - Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
 - Marcadores com estados de cobertura: monitorado, candidato e piloto.
 - Seleção de município integrada ao dashboard e à fila operacional.
@@ -45,7 +45,7 @@ pnpm run build
 
 O mapa-base usa `https://maps.google.com/maps?...&output=embed`, conforme o exemplo fornecido, e não expõe API key. Como o conteúdo do iframe pertence a outro domínio, a aplicação não tenta inserir objetos JavaScript dentro do Google Maps. Em vez disso, o React mantém uma camada transparente acima do iframe e calcula a posição dos municípios por latitude/longitude usando projeção Web Mercator, com centro e zoom fixos iguais aos parâmetros do iframe.
 
-A camada oferece círculos de risco, pulsação para sinalização, tooltip hidrológico, seleção, filtro por UF e filtro por risco. A navegação é implementada por uma camada de interação própria: arraste e zoom atualizam o centro/nível do iframe e recalculam os marcadores, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo. Como cada alteração de viewport recria o iframe com novos parâmetros `ll` e `z`, existe uma pequena atualização visual entre ações; isso preserva a restrição de segurança e mantém a camada alinhada.
+A camada oferece círculos de risco, pulsação para sinalização, tooltip hidrológico, seleção, filtro por UF e filtro por risco. O iframe permanece deliberadamente não interativo para manter o enquadramento nacional estável e permitir a comparação visual dos municípios em um único painel, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo.
 
 Em produção, os dados demonstrativos devem ser substituídos por uma API segura ou serviço de streaming que forneça coordenadas, status de cobertura, risco, timestamp, qualidade e proveniência. A aplicação estática não deve conter credenciais privadas nem emitir alertas públicos autonomamente.
 
