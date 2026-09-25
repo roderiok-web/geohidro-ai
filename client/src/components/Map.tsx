@@ -22,6 +22,9 @@ type IframeCoverageMapProps = {
 
 const MAP_CONFIG = { center: { lat: -14.2, lng: -51.9 }, zoom: 4, tileSize: 256 };
 const MAP_URL = "https://maps.google.com/maps?ll=-14.2,-51.9&z=4&output=embed";
+// The Embed viewport reserves a small top band for Google labels/controls.
+// Keep longitude mathematically centered and compensate only the latitude axis.
+const MAP_CALIBRATION = { verticalOffsetRatio: 0.03, maxVerticalOffset: 24 };
 
 function mercator(lat: number, lng: number, zoom: number) {
   const scale = MAP_CONFIG.tileSize * 2 ** zoom;
@@ -37,9 +40,10 @@ function projectPoint(point: CoveragePoint, width: number, height: number) {
   const centerWorld = mercator(MAP_CONFIG.center.lat, MAP_CONFIG.center.lng, MAP_CONFIG.zoom);
   const currentWorld = mercator(point.lat, point.lng, MAP_CONFIG.zoom);
   const scale = Math.min(width / 900, height / 440);
+  const verticalOffset = Math.min(MAP_CALIBRATION.maxVerticalOffset, Math.max(12, width * MAP_CALIBRATION.verticalOffsetRatio));
   return {
     left: width / 2 + (currentWorld.x - centerWorld.x) * scale,
-    top: height / 2 + (currentWorld.y - centerWorld.y) * scale,
+    top: height / 2 + (currentWorld.y - centerWorld.y) * scale + verticalOffset,
   };
 }
 
