@@ -50,6 +50,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
   const [ufFilter, setUfFilter] = useState("Todas");
   const [riskFilter, setRiskFilter] = useState("Todos");
   const [lastSync, setLastSync] = useState(() => new Date());
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   const ufs = useMemo(() => ["Todas", ...Array.from(new Set(points.map((point) => point.state))).sort()], [points]);
   const risks = useMemo(() => ["Todos", ...Array.from(new Set(points.map((point) => point.risk))).sort()], [points]);
@@ -95,18 +96,30 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
           {filteredPoints.map((point) => {
             const position = projectPoint(point, viewport.width, viewport.height);
             const isSelected = selected === point.name;
+            const isHovered = hoveredCity === point.name;
+            const tooltipPlacement = position.left > viewport.width - 150 ? "left" : position.left < 150 ? "right" : position.top < 110 ? "below" : "above";
             return (
               <button
                 key={point.name}
                 type="button"
-                className={`iframe-city-marker ${isSelected ? "selected" : ""}`}
-                style={{ left: `${position.left}px`, top: `${position.top}px`, "--marker-color": point.color } as CSSProperties}
+                className={`iframe-city-marker ${isSelected ? "selected" : ""} ${isHovered ? "hovered" : ""}`}
+                style={{ left: `${position.left}px`, top: `${position.top}px`, "--marker-color": point.color, "--tooltip-accent": point.color } as CSSProperties}
                 onClick={() => onSelect(point.name)}
+                onMouseEnter={() => setHoveredCity(point.name)}
+                onMouseLeave={() => setHoveredCity(null)}
+                onFocus={() => setHoveredCity(point.name)}
+                onBlur={() => setHoveredCity(null)}
                 aria-label={`${point.name}, ${point.state}, ${point.coverage}, risco ${point.risk}`}
               >
                 <span className="iframe-city-pulse" />
                 <span className="iframe-city-circle" />
-                <span className="iframe-city-tooltip"><strong>{point.name} · {point.state}</strong><small>{point.coverage} · {point.risk} · P(risco) {point.score}%</small><em>{point.type} · {point.model} · {point.rain}</em></span>
+                <span className={`iframe-city-tooltip tooltip-${tooltipPlacement}`} role="tooltip">
+                  <strong>{point.name} - {point.state}</strong>
+                  <small>Modelo: {point.model}</small>
+                  <span className="iframe-tooltip-divider" />
+                  <span className="iframe-tooltip-row"><span>P(Risco):</span><b>{point.score}%</b></span>
+                  <span className="iframe-tooltip-row"><span>Impacto 24h:</span><b>{point.rain}</b></span>
+                </span>
               </button>
             );
           })}
