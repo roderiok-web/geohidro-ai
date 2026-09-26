@@ -11,6 +11,8 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Coordenadas alinhadas à `baseCities` do exemplo fornecido, usando exatamente centro `(-14.2350, -51.9253)`, zoom `4` e projeção Web Mercator em escala 1:1.
 - Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
 - Marcadores com estados de cobertura: monitorado, candidato e piloto.
+- Classificação única de risco em todo o produto: **Crítico (vermelho) → Alto (laranja) → Moderado (azul)**, incluindo círculos, legenda, fila, tabela e evidências.
+- Filtro territorial do mapa por região: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
 - Seleção de município integrada ao dashboard e à fila operacional.
 - Fila de alertas com supervisão humana: aprovar, reavaliar e rejeitar.
 - Métricas da Meta 2.2.4: linha de base, cobertura atual, marcos de 2027/2031/2035 e lacuna restante.
@@ -46,7 +48,7 @@ pnpm run build
 
 O mapa-base usa `https://maps.google.com/maps?...&output=embed`, conforme o exemplo fornecido, e não expõe API key. Como o conteúdo do iframe pertence a outro domínio, a aplicação não tenta inserir objetos JavaScript dentro do Google Maps. Em vez disso, o React mantém uma camada transparente acima do iframe e calcula a posição dos municípios por latitude/longitude usando projeção Web Mercator, com centro e zoom fixos iguais aos parâmetros do iframe.
 
-A camada oferece círculos de risco, pulsação para sinalização, tooltip hidrológico, seleção, filtro por UF e filtro por risco. A posição é calculada pelo mesmo algoritmo do exemplo anexado: `project(lat, lng, zoom)` com escala `tileSize * 2 ** zoom` e deslocamento em pixels a partir do centro do iframe, sem fator heurístico de compressão ou correção visual. A base demonstrativa inclui as onze cidades da `baseCities`, com latitudes, longitudes, regiões, probabilidades, chuva e modelo de IA. O iframe permanece deliberadamente não interativo para manter o enquadramento nacional estável e permitir a comparação visual dos municípios em um único painel, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo.
+A camada oferece círculos de risco priorizados por z-index, pulsação para sinalização, tooltip hidrológico, seleção, filtro por região e filtro por risco. A posição é calculada pelo mesmo algoritmo do exemplo anexado: `project(lat, lng, zoom)` com escala `tileSize * 2 ** zoom` e deslocamento em pixels a partir do centro do iframe, sem fator heurístico de compressão ou correção visual. A base demonstrativa inclui as onze cidades da `baseCities`, com latitudes, longitudes, regiões, probabilidades, chuva e modelo de IA. O iframe permanece deliberadamente não interativo para manter o enquadramento nacional estável e permitir a comparação visual dos municípios em um único painel, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo.
 
 Em produção, os dados demonstrativos devem ser substituídos por uma API segura ou serviço de streaming que forneça coordenadas, status de cobertura, risco, timestamp, qualidade e proveniência. A aplicação estática não deve conter credenciais privadas nem emitir alertas públicos autonomamente.
 

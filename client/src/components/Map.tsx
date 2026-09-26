@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { cn } from "@/lib/utils";
+import { RISK_LEVELS, riskColor, riskPriority } from "@/lib/risk";
 
 export type CoveragePoint = {
   name: string;
@@ -25,6 +26,7 @@ type IframeCoverageMapProps = {
 
 const MAP_CONFIG = { center: { lat: -14.235, lng: -51.9253 }, zoom: 4, tileSize: 256 };
 const MAP_URL = "https://maps.google.com/maps?ll=-14.2350,-51.9253&z=4&output=embed";
+const REGION_OPTIONS = [{ value: "Todas", label: "Todas" }, { value: "N", label: "Norte" }, { value: "NE", label: "Nordeste" }, { value: "CO", label: "Centro-Oeste" }, { value: "SE", label: "Sudeste" }, { value: "S", label: "Sul" }] as const;
 
 function mercator(lat: number, lng: number, zoom: number) {
   const scale = MAP_CONFIG.tileSize * 2 ** zoom;
@@ -47,16 +49,15 @@ function projectPoint(point: CoveragePoint, width: number, height: number) {
 
 export function MapView({ points, selected, onSelect, className }: IframeCoverageMapProps) {
   const [viewport, setViewport] = useState({ width: 900, height: 440 });
-  const [ufFilter, setUfFilter] = useState("Todas");
+  const [regionFilter, setRegionFilter] = useState("Todas");
   const [riskFilter, setRiskFilter] = useState("Todos");
   const [lastSync, setLastSync] = useState(() => new Date());
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const ufs = useMemo(() => ["Todas", ...Array.from(new Set(points.map((point) => point.state))).sort()], [points]);
-  const risks = useMemo(() => ["Todos", ...Array.from(new Set(points.map((point) => point.risk))).sort()], [points]);
+  const risks = useMemo(() => ["Todos", ...RISK_LEVELS.filter((risk) => points.some((point) => point.risk === risk))], [points]);
   const filteredPoints = useMemo(
-    () => points.filter((point) => (ufFilter === "Todas" || point.state === ufFilter) && (riskFilter === "Todos" || point.risk === riskFilter)),
-    [points, riskFilter, ufFilter],
+    () => points.filter((point) => (regionFilter === "Todas" || point.region === regionFilter) && (riskFilter === "Todos" || point.risk === riskFilter)),
+    [points, regionFilter, riskFilter],
   );
 
   useEffect(() => {
@@ -79,7 +80,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
     <div className={cn("map-stage iframe-map-stage", className)}>
       <div className="map-toolbar iframe-map-toolbar">
         <div className="flex items-center gap-2"><span className="live-dot" /> <span className="text-xs font-semibold text-slate-200">Google Maps · Brasil</span></div>
-        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: "#d9283e" }} /> Alto</span><span><i className="legend-dot" style={{ background: "#F37021" }} /> Crítico</span><span><i className="legend-dot" style={{ background: "#1d5fa7" }} /> Moderado</span></div>
+        <div className="flex items-center gap-3 text-[11px] text-slate-400"><span><i className="legend-dot" style={{ background: riskColor("Crítico") }} /> Crítico</span><span><i className="legend-dot" style={{ background: riskColor("Alto") }} /> Alto</span><span><i className="legend-dot" style={{ background: riskColor("Moderado") }} /> Moderado</span></div>
       </div>
       <div className="iframe-map-frame fixed-brazil-viewport">
         <iframe
@@ -103,7 +104,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
                 key={point.name}
                 type="button"
                 className={`iframe-city-marker ${isSelected ? "selected" : ""} ${isHovered ? "hovered" : ""}`}
-                style={{ left: `${position.left}px`, top: `${position.top}px`, "--marker-color": point.color, "--tooltip-accent": point.color } as CSSProperties}
+                style={{ left: `${position.left}px`, top: `${position.top}px`, zIndex: 20 - riskPriority(point.risk), "--marker-color": point.color, "--tooltip-accent": point.color } as CSSProperties}
                 onClick={() => onSelect(point.name)}
                 onMouseEnter={() => setHoveredCity(point.name)}
                 onMouseLeave={() => setHoveredCity(null)}
@@ -125,7 +126,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
           })}
         </div>
         <div className="iframe-map-filters">
-          <label>UF<select value={ufFilter} onChange={(event) => setUfFilter(event.target.value)}>{ufs.map((uf) => <option key={uf}>{uf}</option>)}</select></label>
+          <label>Região<select value={regionFilter} onChange={(event) => setRegionFilter(event.target.value)}>{REGION_OPTIONS.map((region) => <option key={region.value} value={region.value}>{region.label}</option>)}</select></label>
           <label>Risco<select value={riskFilter} onChange={(event) => setRiskFilter(event.target.value)}>{risks.map((risk) => <option key={risk}>{risk}</option>)}</select></label>
           <span className="iframe-map-count">{filteredPoints.length} / {points.length} municípios</span>
         </div>
