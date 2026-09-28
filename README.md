@@ -19,6 +19,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Indicador próprio MAV — 120 municípios adicionais validados para expansão assistida por IA, sobre a lacuna de referência de 1.205 municípios, com progresso visual de 9,96%.
 - Saúde das fontes de dados, lineage, qualidade e freshness.
 - Catálogo responsivo de municípios.
+- Busca textual normalizada no catálogo, cobrindo município, UF e nome completo do estado, região, tipologia, risco, cobertura, modelo de IA, chuva e score GeoHidro.
 - Visão navegável da arquitetura: entrada, processamento, armazenamento, inferência, decisão e canais oficiais.
 - Simulação de ingestão com feedback visual e registro demonstrativo da versão do modelo.
 

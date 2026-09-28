@@ -71,6 +71,12 @@ type View = "overview" | "municipalities" | "alerts" | "architecture";
 
 const riskClass = riskUiClass;
 
+const STATE_SEARCH_NAMES: Record<string, string> = {
+  AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia", CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás", MA: "Maranhão", MT: "Mato Grosso", MS: "Mato Grosso do Sul", MG: "Minas Gerais", PA: "Pará", PB: "Paraíba", PR: "Paraná", PE: "Pernambuco", PI: "Piauí", RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RS: "Rio Grande do Sul", RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina", SP: "São Paulo", SE: "Sergipe", TO: "Tocantins",
+};
+
+const REGION_SEARCH_NAMES: Record<string, string> = { N: "Norte", NE: "Nordeste", CO: "Centro-Oeste", SE: "Sudeste", S: "Sul" };
+
 function MetricCard({ label, value, detail, accent, icon: Icon, progress }: { label: string; value: string; detail: string; accent: string; icon: typeof Activity; progress?: number }) {
   return (
     <div className="gh-card metric-card group">
@@ -134,15 +140,17 @@ function MavPanel() {
       <div className="mav-content">
         <div className="mav-kpi">
           <span className="mav-number">{mavCurrent}</span>
-          <span className="mav-label">municípios adicionais validados</span>
-          <span className="mav-subline">Aptos à integração operacional após validação técnica</span>
+          <div className="mav-label-row"><span className="mav-label">Municípios adicionais validados</span><span className="mav-demo-chip">DEMO</span></div>
+          <span className="mav-demo-note">Valor demonstrativo do protótipo</span>
+          <span className="mav-subline">Tecnicamente aptos a avançar para integração operacional.</span>
         </div>
         <div className="mav-chart" tabIndex={0} role="img" aria-label={`MAV atual: ${mavCurrent} municípios validados de uma lacuna de referência de ${referenceGap}`}>
           <div className="mav-tooltip">
             <strong>MAV — Municípios Adicionais Validados</strong>
-            <span>Municípios que concluíram os gates técnicos e estão aptos à integração operacional.</span>
+            <span>Municípios que concluíram os gates técnicos e estão tecnicamente aptos a avançar para integração operacional.</span>
             <span>MAV atual: <b>{mavCurrent}</b></span>
             <span>Lacuna de referência: <b>{referenceGap.toLocaleString("pt-BR")}</b> municípios</span>
+            <span>Gates: dados ✓ · validação ✓ · desempenho ✓ · OOD ✓ · shadow ✓ · auditoria ✓ · humano ✓</span>
             <small>Indicador interno do projeto — não representa cobertura oficial do Cemaden.</small>
           </div>
           <div className="mav-progress-track">
@@ -152,7 +160,7 @@ function MavPanel() {
             <span className="mav-progress-end" />
           </div>
           <div className="mav-scale"><span>0</span><span>MAV atual · {mavCurrent}</span><span>{referenceGap.toLocaleString("pt-BR")} · gap até 2035</span></div>
-          <div className="mav-progress-caption"><span>Progresso MAV</span><strong>{mavProgress.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</strong></div>
+          <div className="mav-progress-caption"><span>MAV sobre a lacuna de referência</span><strong>{mavProgress.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</strong></div>
         </div>
       </div>
       <div className="mav-footnote"><span><Sparkles size={13} /> A IA recomenda; o especialista decide.</span><span>Não é indicador oficial do PN-PDC</span></div>
@@ -196,10 +204,28 @@ function ArchitectureView() {
 
 function MunicipalitiesView({ onSelect }: { onSelect: (name: string) => void }) {
   const [query, setQuery] = useState("");
-  const normalizedQuery = query.trim().toLocaleLowerCase("pt-BR");
-  const filteredMunicipalities = municipalities.filter((city) => `${city.name} ${city.state}`.toLocaleLowerCase("pt-BR").includes(normalizedQuery));
+  const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+  const normalizedQuery = normalizeSearch(query.trim());
+  const filteredMunicipalities = municipalities.filter((city) => {
+    const searchableFields = [
+      city.name,
+      city.state,
+      STATE_SEARCH_NAMES[city.state] ?? city.state,
+      city.region,
+      REGION_SEARCH_NAMES[city.region] ?? city.region,
+      city.type,
+      city.risk,
+      city.coverage,
+      city.model,
+      city.rain,
+      String(city.score),
+      city.score.toLocaleString("pt-BR"),
+      "atualizado há 6 min",
+    ];
+    return normalizeSearch(searchableFields.join(" ")).includes(normalizedQuery);
+  });
 
-  return <div className="space-y-6"><div className="page-heading"><div><p className="eyebrow">Catálogo territorial</p><h2>Municípios em foco.</h2><p>Camada demonstrativa para priorização da expansão assistida por IA.</p></div><Button className="bg-cyan-400 font-bold text-slate-950 hover:bg-cyan-300" onClick={() => toast.info("Exportação demonstrativa", { description: "O relatório será gerado com a linhagem das fontes." })}>Exportar visão <ArrowUpRight size={15} /></Button></div><div className="gh-card overflow-hidden"><div className="table-toolbar"><div className="search-box"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar município ou estado" aria-label="Buscar município ou estado" /></div><button className="filter-button"><SlidersHorizontal size={14} /> Filtros <span>{filteredMunicipalities.length}</span></button></div><div className="overflow-x-auto"><table className="gh-table"><thead><tr><th>Município</th><th>Tipologia dominante</th><th>Risco</th><th>Cobertura</th><th>Score GeoHidro</th><th /></tr></thead><tbody>{filteredMunicipalities.length > 0 ? filteredMunicipalities.map((city) => <tr key={city.name}><td><button className="table-place" onClick={() => onSelect(city.name)}><span className="table-avatar" style={{ background: `${city.color}20`, color: city.color }}>{city.state}</span><span><strong>{city.name}</strong><small>{city.state} · atualizado há 6 min</small></span></button></td><td>{city.type}</td><td><span className={`risk-pill ${riskClass(city.risk)}`}>{city.risk}</span></td><td><span className={`coverage-label ${city.coverage.toLowerCase()}`}>{city.coverage}</span></td><td><div className="score-cell"><span>{city.score}</span><div><i style={{ width: `${city.score}%` }} /></div></div></td><td><MoreHorizontal size={17} className="text-slate-500" /></td></tr>) : <tr><td colSpan={6} className="py-10 text-center text-xs text-slate-500">Nenhum município ou estado encontrado.</td></tr>}</tbody></table></div></div></div>;
+  return <div className="space-y-6"><div className="page-heading"><div><p className="eyebrow">Catálogo territorial</p><h2>Municípios em foco.</h2><p>Camada demonstrativa para priorização da expansão assistida por IA.</p></div><Button className="bg-cyan-400 font-bold text-slate-950 hover:bg-cyan-300" onClick={() => toast.info("Exportação demonstrativa", { description: "O relatório será gerado com a linhagem das fontes." })}>Exportar visão <ArrowUpRight size={15} /></Button></div><div className="gh-card overflow-hidden"><div className="table-toolbar"><div className="search-box"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar município, risco, tipologia ou qualquer campo" aria-label="Buscar qualquer informação da tabela" /></div><button className="filter-button"><SlidersHorizontal size={14} /> Filtros <span>{filteredMunicipalities.length}</span></button></div><div className="overflow-x-auto"><table className="gh-table"><thead><tr><th>Município</th><th>Tipologia dominante</th><th>Risco</th><th>Cobertura</th><th>Score GeoHidro</th><th /></tr></thead><tbody>{filteredMunicipalities.length > 0 ? filteredMunicipalities.map((city) => <tr key={city.name}><td><button className="table-place" onClick={() => onSelect(city.name)}><span className="table-avatar" style={{ background: `${city.color}20`, color: city.color }}>{city.state}</span><span><strong>{city.name}</strong><small>{city.state} · atualizado há 6 min</small></span></button></td><td>{city.type}</td><td><span className={`risk-pill ${riskClass(city.risk)}`}>{city.risk}</span></td><td><span className={`coverage-label ${city.coverage.toLowerCase()}`}>{city.coverage}</span></td><td><div className="score-cell"><span>{city.score}</span><div><i style={{ width: `${city.score}%` }} /></div></div></td><td><MoreHorizontal size={17} className="text-slate-500" /></td></tr>) : <tr><td colSpan={6} className="py-10 text-center text-xs text-slate-500">Nenhum resultado para “{query}”. Tente município, estado, risco, tipologia, cobertura, modelo, chuva ou score.</td></tr>}</tbody></table></div></div></div>;
 }
 
 function AppOverview({ selected, onSelect, alerts, onAction }: { selected: string; onSelect: (name: string) => void; alerts: AlertItem[]; onAction: (id: string, action: string) => void }) {
