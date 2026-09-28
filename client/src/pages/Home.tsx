@@ -117,6 +117,49 @@ function CoveragePanel() {
   );
 }
 
+function MavPanel() {
+  const mavCurrent = 120;
+  const referenceGap = 1205;
+  const mavProgress = (mavCurrent / referenceGap) * 100;
+
+  return (
+    <div className="gh-card mav-panel">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">MAV · validação para expansão assistida por IA</p>
+          <h3 className="panel-title mt-1">Municípios adicionais validados</h3>
+        </div>
+        <span className="status-chip amber"><ShieldCheck size={13} /> Indicador próprio</span>
+      </div>
+      <div className="mav-content">
+        <div className="mav-kpi">
+          <span className="mav-number">{mavCurrent}</span>
+          <span className="mav-label">municípios adicionais validados</span>
+          <span className="mav-subline">Aptos à integração operacional após validação técnica</span>
+        </div>
+        <div className="mav-chart" tabIndex={0} role="img" aria-label={`MAV atual: ${mavCurrent} municípios validados de uma lacuna de referência de ${referenceGap}`}>
+          <div className="mav-tooltip">
+            <strong>MAV — Municípios Adicionais Validados</strong>
+            <span>Municípios que concluíram os gates técnicos e estão aptos à integração operacional.</span>
+            <span>MAV atual: <b>{mavCurrent}</b></span>
+            <span>Lacuna de referência: <b>{referenceGap.toLocaleString("pt-BR")}</b> municípios</span>
+            <small>Indicador interno do projeto — não representa cobertura oficial do Cemaden.</small>
+          </div>
+          <div className="mav-progress-track">
+            <div className="mav-progress-base" />
+            <div className="mav-progress-fill" style={{ width: `${mavProgress}%` }} />
+            <span className="mav-progress-marker" style={{ left: `${mavProgress}%` }} />
+            <span className="mav-progress-end" />
+          </div>
+          <div className="mav-scale"><span>0</span><span>MAV atual · {mavCurrent}</span><span>{referenceGap.toLocaleString("pt-BR")} · gap até 2035</span></div>
+          <div className="mav-progress-caption"><span>Progresso MAV</span><strong>{mavProgress.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%</strong></div>
+        </div>
+      </div>
+      <div className="mav-footnote"><span><Sparkles size={13} /> A IA recomenda; o especialista decide.</span><span>Não é indicador oficial do PN-PDC</span></div>
+    </div>
+  );
+}
+
 function AlertQueue({ alerts, onAction, compact = false }: { alerts: AlertItem[]; onAction: (id: string, action: string) => void; compact?: boolean }) {
   const orderedAlerts = [...alerts].sort((a, b) => {
     return riskPriority(a.level) - riskPriority(b.level) || b.probability - a.probability;
@@ -160,7 +203,7 @@ function MunicipalitiesView({ onSelect }: { onSelect: (name: string) => void }) 
 }
 
 function AppOverview({ selected, onSelect, alerts, onAction }: { selected: string; onSelect: (name: string) => void; alerts: AlertItem[]; onAction: (id: string, action: string) => void }) {
-  return <div className="space-y-6"><div className="hero-strip"><div><div className="flex items-center gap-2"><span className="status-chip coral"><span className="pulse-dot" /> Operação assistida</span><span className="text-[11px] text-slate-500">24/7 · traceável</span></div><h2 className="mt-4 max-w-3xl">Mais território observado.<br /><em>Mais tempo para decidir.</em></h2><p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400">O GeoHidro AI combina dados geo-hidrológicos e modelos probabilísticos para ampliar o monitoramento, mantendo a decisão final com o especialista.</p></div><div className="hero-orbit"><div className="orbit-ring one" /><div className="orbit-ring two" /><div className="orbit-core"><Sparkles size={24} /></div><span className="orbit-label top">IA + dados</span><span className="orbit-label bottom">human-in-the-loop</span></div></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><MetricCard label="Municípios monitorados" value="1.295" detail="+162 desde a linha de base" accent="#6ee7b7" icon={MapIcon} progress={51.8} /><MetricCard label="Lacuna até 2035" value="1.205" detail="48,2% da meta final" accent="#ffb454" icon={Target} /><MetricCard label="Alertas em análise" value="03" detail="1 crítico · 2 altos" accent="#f36a4f" icon={BellRing} /><MetricCard label="Saúde do pipeline" value="98,6%" detail="p95 inferência · 2,4 s" accent="#8ca6ff" icon={Activity} /></div><div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]"><div className="gh-card map-panel"><div className="flex items-start justify-between"><div><p className="eyebrow">Visão territorial</p><h3 className="panel-title mt-1">Cobertura GeoHidro AI</h3></div><div className="flex gap-2"><button className="icon-button" onClick={() => toast.success("Camadas atualizadas", { description: "Risco, cobertura e exposição sincronizados." })}><RefreshCw size={15} /></button><button className="icon-button" onClick={() => toast.info("Filtros de mapa", { description: "Camadas demonstrativas disponíveis no próximo release." })}><SlidersHorizontal size={15} /></button></div></div><div className="mt-5"><BrazilMap selected={selected} onSelect={onSelect} /></div></div><AlertQueue alerts={alerts} onAction={onAction} /></div><div className="grid gap-6 lg:grid-cols-[1fr_1fr]"><CoveragePanel /><DataHealth /></div></div>;
+  return <div className="space-y-6"><div className="hero-strip"><div><div className="flex items-center gap-2"><span className="status-chip coral"><span className="pulse-dot" /> Operação assistida</span><span className="text-[11px] text-slate-500">24/7 · traceável</span></div><h2 className="mt-4 max-w-3xl">Mais território observado.<br /><em>Mais tempo para decidir.</em></h2><p className="mt-4 max-w-xl text-sm leading-relaxed text-slate-400">O GeoHidro AI combina dados geo-hidrológicos e modelos probabilísticos para ampliar o monitoramento, mantendo a decisão final com o especialista.</p></div><div className="hero-orbit"><div className="orbit-ring one" /><div className="orbit-ring two" /><div className="orbit-core"><Sparkles size={24} /></div><span className="orbit-label top">IA + dados</span><span className="orbit-label bottom">human-in-the-loop</span></div></div><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><MetricCard label="Municípios monitorados" value="1.295" detail="+162 desde a linha de base" accent="#6ee7b7" icon={MapIcon} progress={51.8} /><MetricCard label="Lacuna até 2035" value="1.205" detail="48,2% da meta final" accent="#ffb454" icon={Target} /><MetricCard label="Alertas em análise" value="03" detail="1 crítico · 2 altos" accent="#f36a4f" icon={BellRing} /><MetricCard label="Saúde do pipeline" value="98,6%" detail="p95 inferência · 2,4 s" accent="#8ca6ff" icon={Activity} /></div><div className="grid gap-6 xl:grid-cols-[1.35fr_.65fr]"><div className="gh-card map-panel"><div className="flex items-start justify-between"><div><p className="eyebrow">Visão territorial</p><h3 className="panel-title mt-1">Cobertura GeoHidro AI</h3></div><div className="flex gap-2"><button className="icon-button" onClick={() => toast.success("Camadas atualizadas", { description: "Risco, cobertura e exposição sincronizados." })}><RefreshCw size={15} /></button><button className="icon-button" onClick={() => toast.info("Filtros de mapa", { description: "Camadas demonstrativas disponíveis no próximo release." })}><SlidersHorizontal size={15} /></button></div></div><div className="mt-5"><BrazilMap selected={selected} onSelect={onSelect} /></div></div><AlertQueue alerts={alerts} onAction={onAction} /></div><div className="grid gap-6 lg:grid-cols-[1.2fr_.8fr]"><div className="space-y-6"><CoveragePanel /><MavPanel /></div><DataHealth /></div></div>;
 }
 
 export default function Home() {

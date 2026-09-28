@@ -16,6 +16,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Seleção de município integrada ao dashboard e à fila operacional.
 - Fila de alertas com supervisão humana: aprovar, reavaliar e rejeitar.
 - Métricas da Meta 2.2.4: linha de base, cobertura atual, marcos de 2027/2031/2035 e lacuna restante.
+- Indicador próprio MAV — 120 municípios adicionais validados para expansão assistida por IA, sobre a lacuna de referência de 1.205 municípios, com progresso visual de 9,96%.
 - Saúde das fontes de dados, lineage, qualidade e freshness.
 - Catálogo responsivo de municípios.
 - Visão navegável da arquitetura: entrada, processamento, armazenamento, inferência, decisão e canais oficiais.
@@ -51,6 +52,10 @@ O mapa-base usa `https://maps.google.com/maps?...&output=embed`, conforme o exem
 A camada oferece círculos de risco priorizados por z-index, pulsação para sinalização, tooltip hidrológico, seleção, filtro por região e filtro por risco. A posição é calculada pelo mesmo algoritmo do exemplo anexado: `project(lat, lng, zoom)` com escala `tileSize * 2 ** zoom` e deslocamento em pixels a partir do centro do iframe, sem fator heurístico de compressão ou correção visual. A base demonstrativa inclui as onze cidades da `baseCities`, com latitudes, longitudes, regiões, probabilidades, chuva e modelo de IA. O iframe permanece deliberadamente não interativo para manter o enquadramento nacional estável e permitir a comparação visual dos municípios em um único painel, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo.
 
 Em produção, os dados demonstrativos devem ser substituídos por uma API segura ou serviço de streaming que forneça coordenadas, status de cobertura, risco, timestamp, qualidade e proveniência. A aplicação estática não deve conter credenciais privadas nem emitir alertas públicos autonomamente.
+
+## Indicador MAV
+
+O MAV (Municípios Adicionais Validados para Monitoramento Assistido por IA) é um indicador interno do GeoHidro AI. Ele conta municípios que concluíram os gates de qualidade dos dados, validação espaço-temporal, desempenho técnico, OOD/abstention, shadow mode, auditabilidade e supervisão humana. No protótipo, o valor demonstrativo é **120** e a referência é a lacuna `2.500 − 1.295 = 1.205`; portanto, o progresso visual é `120 / 1.205 × 100 = 9,96%`. O MAV não representa municípios oficialmente incorporados ou monitorados pelo Cemaden.
 
 ## Organização principal
 
