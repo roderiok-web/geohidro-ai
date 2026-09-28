@@ -125,8 +125,10 @@ function CoveragePanel() {
 
 function MavPanel() {
   const mavCurrent = 120;
-  const referenceGap = 1205;
-  const mavProgress = (mavCurrent / referenceGap) * 100;
+  const target2035 = coverageData.find((item) => item.year === "2035")?.value ?? 0;
+  const currentCoverage = coverageData.find((item) => item.label === "atual")?.value ?? 0;
+  const referenceGap = target2035 - currentCoverage;
+  const mavProgress = referenceGap > 0 ? (mavCurrent / referenceGap) * 100 : 0;
 
   return (
     <div className="gh-card mav-panel">
@@ -150,7 +152,7 @@ function MavPanel() {
             <span>Municípios que concluíram os gates técnicos e estão tecnicamente aptos a avançar para integração operacional.</span>
             <span>MAV atual: <b>{mavCurrent}</b></span>
             <span>Lacuna de referência: <b>{referenceGap.toLocaleString("pt-BR")}</b> municípios</span>
-            <span>Gates: dados ✓ · validação ✓ · desempenho ✓ · OOD ✓ · shadow ✓ · auditoria ✓ · humano ✓</span>
+            <span>Gates: Qualidade dos dados ✓ · validação espaço-temporal ✓ · desempenho técnico ✓ · OOD/abstention ✓ · shadow mode ✓ · auditabilidade ✓ · supervisão humana ✓</span>
             <small>Indicador interno do projeto — não representa cobertura oficial do Cemaden.</small>
           </div>
           <div className="mav-progress-track">

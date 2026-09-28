@@ -56,7 +56,7 @@ Em produção, os dados demonstrativos devem ser substituídos por uma API segur
 
 ## Indicador MAV
 
-O MAV (Municípios Adicionais Validados para Monitoramento Assistido por IA) é um indicador interno do GeoHidro AI. Ele conta municípios que concluíram os gates de qualidade dos dados, validação espaço-temporal, desempenho técnico, OOD/abstention, shadow mode, auditabilidade e supervisão humana. No protótipo, o valor demonstrativo é **120** e a referência é a lacuna `2.500 − 1.295 = 1.205`; portanto, o progresso visual é `120 / 1.205 × 100 = 9,96%`. O MAV não representa municípios oficialmente incorporados ou monitorados pelo Cemaden.
+O MAV (Municípios Adicionais Validados para Monitoramento Assistido por IA) é um indicador interno do GeoHidro AI. Ele conta municípios que concluíram os gates de qualidade dos dados, validação espaço-temporal, desempenho técnico, OOD/abstention, shadow mode, auditabilidade e supervisão humana. No protótipo, o valor demonstrativo é **120** e a referência é derivada da trajetória da meta como `target2035 − currentCoverage`, atualmente `2.500 − 1.295 = 1.205`; portanto, o progresso visual é `120 / 1.205 × 100 = 9,96%`. Na futura implementação real, o MAV deve contar apenas municípios adicionais únicos, fora da cobertura operacional de referência, que concluíram todos os gates — nunca municípios já contabilizados nem simples quantidade de municípios processados. O MAV não representa municípios oficialmente incorporados ou monitorados pelo Cemaden.
 
 ## Organização principal
 
