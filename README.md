@@ -9,6 +9,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Camada GeoHidro AI sobreposta ao iframe, calculada em Web Mercator a partir de latitude/longitude.
 - Viewport nacional fixo, sem arraste ou zoom, garantindo a visualização simultânea do Brasil e de seus estados.
 - Sweep visual de atualização de satélite sobre o mapa: faixa translúcida horizontal em loop infinito, sem captura de ponteiro, com suporte a `prefers-reduced-motion`.
+- Status satelital em tempo real: consulta pública ao `Last-Modified` da imagem **NOAA GOES-18 GeoColor Full Disk** e à telemetria X-ray GOES; exibe status/timestamp e ajusta opacidade e duração do sweep por freshness e intensidade de sinal. Atualização a cada cinco minutos, com fallback visual seguro em caso de indisponibilidade.
 - Coordenadas alinhadas à `baseCities` do exemplo fornecido, usando exatamente centro `(-14.2350, -51.9253)`, zoom `4` e projeção Web Mercator em escala 1:1.
 - Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
 - Marcadores com estados de cobertura: monitorado, candidato e piloto.
