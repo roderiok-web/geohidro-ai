@@ -8,6 +8,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Mapa do Brasil com Google Maps via `iframe` `output=embed`, sem API key exposta no front-end.
 - Camada GeoHidro AI sobreposta ao iframe, calculada em Web Mercator a partir de latitude/longitude.
 - Viewport nacional fixo, sem arraste ou zoom, garantindo a visualização simultânea do Brasil e de seus estados.
+- Sweep visual de atualização de satélite sobre o mapa: faixa translúcida horizontal em loop infinito, sem captura de ponteiro, com suporte a `prefers-reduced-motion`.
 - Coordenadas alinhadas à `baseCities` do exemplo fornecido, usando exatamente centro `(-14.2350, -51.9253)`, zoom `4` e projeção Web Mercator em escala 1:1.
 - Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
 - Marcadores com estados de cobertura: monitorado, candidato e piloto.
@@ -18,6 +19,7 @@ Dashboard profissional e responsivo para apoio à decisão em monitoramento e al
 - Métricas da Meta 2.2.4: linha de base, cobertura atual, marcos de 2027/2031/2035 e lacuna restante.
 - Indicador próprio MAV — 120 municípios adicionais validados para expansão assistida por IA, sobre a lacuna de referência de 1.205 municípios, com progresso visual de 9,96%.
 - Saúde das fontes de dados, lineage, qualidade e freshness.
+- Grids territoriais alinhados com tracks `minmax(0, 1.35fr) / minmax(0, .65fr)` para manter mapa, fila, trajetória, MAV e observabilidade na mesma proporção em telas largas.
 - Catálogo responsivo de municípios.
 - Busca textual normalizada no catálogo, cobrindo município, UF e nome completo do estado, região, tipologia, risco, cobertura, modelo de IA, chuva e score GeoHidro.
 - Visão navegável da arquitetura: entrada, processamento, armazenamento, inferência, decisão e canais oficiais.

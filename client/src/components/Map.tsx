@@ -93,6 +93,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
           tabIndex={-1}
           aria-hidden="true"
         />
+        <div className="satellite-update-sweep" aria-hidden="true" />
         <div className="iframe-city-layer" aria-label="Municípios monitorados pelo GeoHidro AI">
           {filteredPoints.map((point) => {
             const position = projectPoint(point, viewport.width, viewport.height);
