@@ -276,3 +276,15 @@ body { background: var(--ink-950); }
 @media (max-width: 960px) { .gh-sidebar { width: 72px; padding: 19px 11px; }.brand-lockup { justify-content:center; padding:0; }.brand-lockup > div:last-child, .sidebar-divider, .sidebar-label, .nav-item span, .nav-item b, .goal-card, .user-chip > div:not(.avatar), .user-chip > svg { display:none; }.nav-item { justify-content:center; }.gh-main { margin-left:72px; }.hero-neural-field, .hero-orbit { display:none; }.page-content { padding:22px; }.topbar { padding:0 22px; }.operational-grid, .insight-grid { grid-template-columns:1fr; }.map-panel, .alert-panel { min-height:auto; } }
 @media (max-width: 640px) { .app-shell::after { opacity: .11; }.gh-sidebar { height:64px; padding:11px 16px; background:rgba(6,10,18,.95); border-bottom:1px solid rgba(170,205,235,.10); }.brand-mark { width:37px; height:37px; border-radius:12px; }.sidebar-nav { gap:5px; }.nav-item { width:35px; height:35px; min-height:35px; border-radius:10px; }.gh-main { margin-left:0; }.topbar { height:58px; padding:0 15px; }.page-content { padding:16px; }.hero-strip { min-height:272px; padding:27px 23px; border-radius:18px; background-position: 58% center, center; }.hero-strip h2 { font-size:35px; }.metrics-grid { gap:12px !important; }.metric-card { min-height:145px; padding:18px 17px 16px; border-radius:15px; }.metric-value { font-size:34px; }.map-panel, .alert-panel, .coverage-panel, .data-panel, .detail-card { padding:17px; border-radius:17px; }.iframe-map-stage { min-height:500px; }.map-toolbar { top:12px; left:12px; right:12px; }.map-toolbar > div:last-child { display:none; }.iframe-map-filters { left:12px; right:12px; bottom:12px; gap:5px; }.iframe-map-filters label { gap:3px; font-size:8px; }.iframe-map-filters select { max-width:88px; padding:6px 18px 6px 6px; font-size:9px; }.iframe-map-count { padding:6px; font-size:8px; }.map-footnote { left:12px; right:12px; bottom:8px; }.alert-row::before { left:-17px; }.coverage-chart { height:205px; }.mav-panel { padding:17px; }.page-heading { margin-bottom:22px; }.page-heading h2 { font-size:31px; }.arch-canvas { border-radius:17px; }.gh-table th, .gh-table td { padding-left:13px; padding-right:13px; } }
 @media (prefers-reduced-motion: reduce) { .hero-neural-field, .orbit-core { animation:none !important; } }
+
+
+/* Tooltip layering fixes */
+.mav-panel { z-index: 30; overflow: visible; }
+.mav-chart { z-index: 40; }
+.mav-tooltip { z-index: 1000; }
+.mav-tooltip:after { z-index: 1001; }
+.iframe-city-layer { z-index: 20; }
+.iframe-city-marker { z-index: 21; }
+.iframe-city-marker.hovered, .iframe-city-marker:focus-visible { z-index: 1000 !important; }
+.iframe-city-marker.hovered .iframe-city-tooltip, .iframe-city-marker:focus-visible .iframe-city-tooltip { z-index: 1100; }
+.iframe-map-filters, .iframe-map-toolbar { z-index: 1200; }

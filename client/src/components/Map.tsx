@@ -178,7 +178,7 @@ export function MapView({ points, selected, onSelect, className }: IframeCoverag
                 key={point.name}
                 type="button"
                 className={`iframe-city-marker ${isSelected ? "selected" : ""} ${isHovered ? "hovered" : ""}`}
-                style={{ left: `${position.left}px`, top: `${position.top}px`, zIndex: 20 - riskPriority(point.risk), "--marker-color": point.color, "--tooltip-accent": point.color } as CSSProperties}
+                style={{ left: `${position.left}px`, top: `${position.top}px`, zIndex: isHovered ? 100 : 20 - riskPriority(point.risk), "--marker-color": point.color, "--tooltip-accent": point.color } as CSSProperties}
                 onClick={() => onSelect(point.name)}
                 onMouseEnter={() => setHoveredCity(point.name)}
                 onMouseLeave={() => setHoveredCity(null)}
