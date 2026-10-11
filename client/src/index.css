@@ -288,3 +288,47 @@ body { background: var(--ink-950); }
 .iframe-city-marker.hovered, .iframe-city-marker:focus-visible { z-index: 1000 !important; }
 .iframe-city-marker.hovered .iframe-city-tooltip, .iframe-city-marker:focus-visible .iframe-city-tooltip { z-index: 1100; }
 .iframe-map-filters, .iframe-map-toolbar { z-index: 1200; }
+
+/* Collapsed sidebar toggle */
+@media (min-width: 641px) {
+  .app-shell .gh-sidebar,
+  .app-shell .gh-main { transition: width 220ms cubic-bezier(.23,1,.32,1), margin-left 220ms cubic-bezier(.23,1,.32,1); }
+  .app-shell .gh-sidebar { width: 264px; }
+  .app-shell .gh-main { margin-left: 264px; }
+  .app-shell .brand-mark { flex: 0 0 auto; border: 0; padding: 0; font: inherit; cursor: pointer; }
+  .app-shell.sidebar-closed .gh-sidebar { width: 72px; padding-left: 11px; padding-right: 11px; }
+  .app-shell.sidebar-closed .gh-main { margin-left: 72px; }
+  .app-shell.sidebar-closed .brand-lockup { justify-content: center; padding-left: 0; padding-right: 0; }
+  .app-shell.sidebar-closed .brand-lockup > div:last-child,
+  .app-shell.sidebar-closed .sidebar-divider,
+  .app-shell.sidebar-closed .sidebar-label,
+  .app-shell.sidebar-closed .nav-item span,
+  .app-shell.sidebar-closed .nav-item b,
+  .app-shell.sidebar-closed .goal-card,
+  .app-shell.sidebar-closed .user-chip > div:not(.avatar),
+  .app-shell.sidebar-closed .user-chip > svg { display: none; }
+  .app-shell.sidebar-closed .nav-item { justify-content: center; padding-left: 11px; padding-right: 11px; }
+  .app-shell.sidebar-closed .user-chip { justify-content: center; padding-left: 0; padding-right: 0; }
+  .app-shell.sidebar-open .brand-lockup > div:last-child,
+  .app-shell.sidebar-open .sidebar-divider,
+  .app-shell.sidebar-open .sidebar-label,
+  .app-shell.sidebar-open .goal-card,
+  .app-shell.sidebar-open .user-chip > div:not(.avatar),
+  .app-shell.sidebar-open .user-chip > svg { display: block; }
+  .app-shell.sidebar-open .sidebar-divider { display: block; }
+  .app-shell.sidebar-open .sidebar-label { display: block; }
+  .app-shell.sidebar-open .goal-card { display: block; }
+  .app-shell.sidebar-open .user-chip > svg { display: block; }
+  .app-shell.sidebar-open .nav-item span,
+  .app-shell.sidebar-open .nav-item b { display: initial; }
+  .app-shell.sidebar-open .nav-item { justify-content: flex-start; padding-left: 11px; padding-right: 11px; }
+}
+
+@media (min-width: 641px) and (max-width: 960px) {
+  .app-shell.sidebar-open .gh-sidebar { width: 224px; padding-left: 17px; padding-right: 17px; }
+  .app-shell.sidebar-open .gh-main { margin-left: 224px; }
+}
+
+@media (max-width: 640px) {
+  .app-shell .brand-mark { border: 0; padding: 0; font: inherit; cursor: pointer; }
+}
