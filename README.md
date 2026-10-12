@@ -1,77 +1,255 @@
 # GeoHidro AI
 
-Dashboard profissional e responsivo para apoio à decisão em monitoramento e alertas antecipados de riscos geo-hidrológicos, alinhado à **Meta 2.2.4 do PN-PDC 2025–2035**.
+Dashboard web responsivo para apoio à decisão em monitoramento e alertas antecipados de riscos geo-hidrológicos, alinhado à **Meta 2.2.4 do PN-PDC 2025–2035**.
 
-## O que está implementado
+O repositório contém um protótipo de frontend com dados demonstrativos. A aplicação organiza cobertura territorial, alertas, indicadores, observabilidade e uma arquitetura de referência para expansão assistida por IA, sem substituir os sistemas ou a autoridade técnica de Cemaden, Cenad ou Defesas Civis.
 
-- Console operacional em dark mode com linguagem visual de Defesa Civil + IA.
-- Mapa do Brasil com Google Maps via `iframe` `output=embed`, sem API key exposta no front-end.
-- Camada GeoHidro AI sobreposta ao iframe, calculada em Web Mercator a partir de latitude/longitude.
-- Viewport nacional fixo, sem arraste ou zoom, garantindo a visualização simultânea do Brasil e de seus estados.
-- Sweep visual de atualização de satélite sobre o mapa: faixa translúcida horizontal em loop infinito, sem captura de ponteiro, com suporte a `prefers-reduced-motion`.
-- Status satelital em tempo real: consulta pública ao `Last-Modified` da imagem **NOAA GOES-18 GeoColor Full Disk** e à telemetria X-ray GOES; exibe status/timestamp e ajusta opacidade e duração do sweep por freshness e intensidade de sinal. Atualização a cada cinco minutos, com fallback visual seguro em caso de indisponibilidade.
-- Coordenadas alinhadas à `baseCities` do exemplo fornecido, usando exatamente centro `(-14.2350, -51.9253)`, zoom `4` e projeção Web Mercator em escala 1:1.
-- Marcadores georreferenciados para municípios demonstrativos: Petrópolis, Blumenau, Manaus, Recife, São Luís e Porto Alegre.
-- Marcadores com estados de cobertura: monitorado, candidato e piloto.
-- Classificação única de risco em todo o produto: **Crítico (vermelho) → Alto (laranja) → Moderado (azul)**, incluindo círculos, legenda, fila, tabela e evidências.
-- Filtro territorial do mapa por região: Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
-- Seleção de município integrada ao dashboard e à fila operacional.
-- Fila de alertas com supervisão humana: aprovar, reavaliar e rejeitar.
-- Métricas da Meta 2.2.4: linha de base, cobertura atual, marcos de 2027/2031/2035 e lacuna restante.
-- Indicador próprio MAV — 120 municípios adicionais validados para expansão assistida por IA, sobre a lacuna de referência de 1.205 municípios, com progresso visual de 9,96%.
-- Saúde das fontes de dados, lineage, qualidade e freshness.
-- Grids territoriais alinhados com tracks `minmax(0, 1.35fr) / minmax(0, .65fr)` para manter mapa, fila, trajetória, MAV e observabilidade na mesma proporção em telas largas.
-- Catálogo responsivo de municípios.
-- Busca textual normalizada no catálogo, cobrindo município, UF e nome completo do estado, região, tipologia, risco, cobertura, modelo de IA, chuva e score GeoHidro.
-- Visão navegável da arquitetura: entrada, processamento, armazenamento, inferência, decisão e canais oficiais.
-- Simulação de ingestão com feedback visual e registro demonstrativo da versão do modelo.
+## Estado atual
+
+- Aplicação React com quatro visões internas: **Visão operacional**, **Municípios**, **Fila de alertas** e **Arquitetura**.
+- Interface em tema escuro, responsiva e com linguagem visual de machine learning, observabilidade e decisão supervisionada.
+- Menu lateral minimizado por padrão em telas desktop. A logomarca alterna entre o estado fechado e aberto; em telas móveis, a barra superior permanece adaptada ao layout responsivo.
+- Hero visual com rede hidrográfica/neural, cartões de métricas e grids de operação territorial.
+- Navegação client-side com Wouter. A rota principal é `/`; `/404` e a rota de fallback exibem a página de não encontrado.
+- Tratamento de erro da aplicação com `ErrorBoundary` e notificações com Sonner.
+
+## Funcionalidades disponíveis
+
+### Visão operacional
+
+- Métricas demonstrativas da Meta 2.2.4:
+  - 1.295 municípios monitorados;
+  - lacuna de 1.205 municípios até 2035;
+  - 03 alertas em análise;
+  - saúde do pipeline de 98,6%.
+- Mapa nacional com cobertura GeoHidro AI e marcadores sobrepostos.
+- Fila operacional com supervisão humana e ações **Aprovar**, **Reavaliar** e **Rejeitar**.
+- Trajetória da meta com linha de base, cobertura atual e marcos de 2027, 2031 e 2035.
+- Indicador próprio MAV — Municípios Adicionais Validados — com valor demonstrativo, lacuna de referência e tooltip metodológico.
+- Painel demonstrativo de saúde das fontes, qualidade, atualização e lineage.
+- Botão de simulação de ingestão na visão da fila de alertas, com feedback visual e toast de conclusão.
+
+### Municípios
+
+- Tabela responsiva de municípios monitorados.
+- Busca normalizada, sem diferenciação de acentos, em todos os campos apresentados e indexados: município, UF, nome completo do estado, região, tipologia, risco, cobertura, modelo, chuva, score e texto de atualização.
+- Seleção de um município a partir da tabela para retornar à visão operacional.
+- Botão de exportação presente como ação demonstrativa; a exportação real ainda não está conectada a um serviço.
+
+### Fila de alertas
+
+- Ordenação única por criticidade: **Crítico → Alto → Moderado**.
+- Três alertas demonstrativos, com probabilidade, tempo de antecedência, motivo e estado da decisão.
+- Atualização local do estado do alerta após as ações disponíveis.
+
+### Arquitetura
+
+- Fluxo visual de referência entre:
+  1. Fontes & borda;
+  2. Ingestão & qualidade;
+  3. Lakehouse geo;
+  4. Modelos probabilísticos;
+  5. Analista Cemaden.
+- O conteúdo da arquitetura descreve IoT, APIs, MQTT, event bus, PostGIS, séries temporais, feature store, registry de modelos, LSTM, Transformer, GNN, calibração, incerteza, MLOps, auditoria e supervisão humana como referência de evolução.
+
+## Mapa e dados territoriais
+
+O mapa-base usa um `iframe` público do Google Maps com `output=embed`:
+
+```text
+https://maps.google.com/maps?ll=-14.2350,-51.9253&z=4&output=embed
+```
+
+A implementação atual:
+
+- não coloca API key do Google Maps no frontend;
+- mantém o iframe em um viewport nacional fixo, sem arraste ou zoom pela camada da aplicação;
+- calcula a posição dos círculos em React usando projeção Web Mercator, centro `(-14.235, -51.9253)`, zoom `4` e `tileSize` `256`;
+- mantém uma camada transparente sobre o iframe para círculos, pulsação, seleção, hover, tooltips e filtros;
+- filtra os municípios por região — Norte, Nordeste, Centro-Oeste, Sudeste e Sul — e por risco;
+- prioriza visualmente o município em hover ou foco para que seu tooltip permaneça acima dos demais marcadores;
+- usa a classificação única de risco definida em `client/src/lib/risk.ts`:
+  - **Crítico** — vermelho `#d9283e`;
+  - **Alto** — laranja `#F37021`;
+  - **Moderado** — azul `#1d5fa7`.
+
+O dataset demonstrativo é declarado em `client/src/pages/Home.tsx` e contém 11 municípios:
+
+- Petrópolis — RJ;
+- Blumenau — SC;
+- São Sebastião — SP;
+- Recife — PE;
+- Belo Horizonte — MG;
+- Manaus — AM;
+- Goiânia — GO;
+- Rio Branco — AC;
+- Porto Alegre — RS;
+- Salvador — BA;
+- Vitória — ES.
+
+Os nomes, coordenadas, riscos, scores, tipologias, modelos, chuvas e estados de cobertura são dados estáticos do protótipo. Não há API de domínio, banco de dados ou stream operacional implementado no repositório.
+
+## Atualização visual de satélite
+
+O mapa exibe uma faixa horizontal translúcida em loop infinito para simular fluxo contínuo de atualização de dados. A animação:
+
+- usa transformação CSS e não captura ponteiro;
+- respeita `prefers-reduced-motion`;
+- ajusta opacidade e duração conforme a freshness e o sinal retornados pela telemetria;
+- não substitui uma imagem de satélite exibida sobre o mapa.
+
+Durante a execução, `client/src/components/Map.tsx` consulta fontes públicas da NOAA:
+
+- imagem: GOES-18 ABI GeoColor Full Disk;
+- telemetria: série X-ray GOES de um dia.
+
+A consulta ocorre inicialmente e depois a cada cinco minutos. O painel mostra os estados **Ao vivo**, **Atrasada**, **Indisponível**, **Sem conexão** ou **Sincronizando**, além do horário da imagem quando o cabeçalho público `Last-Modified` está disponível. Se a consulta falhar, a aplicação mantém um fallback visual seguro.
+
+## Indicador MAV
+
+O MAV (Municípios Adicionais Validados para Monitoramento Assistido por IA) é um indicador interno do GeoHidro AI. No protótipo, o valor demonstrativo é **120**.
+
+A lacuna de referência é derivada da trajetória da meta:
+
+```text
+target2035 − currentCoverage
+2.500 − 1.295 = 1.205 municípios
+```
+
+O progresso visual atual é calculado como:
+
+```text
+120 / 1.205 × 100 = 9,96%
+```
+
+O tooltip do MAV descreve gates de qualidade dos dados, validação espaço-temporal, desempenho técnico, OOD/abstention, shadow mode, auditabilidade e supervisão humana. O indicador não representa cobertura oficial do Cemaden. Em uma implementação real, deve contar apenas municípios adicionais únicos que concluíram todos os gates, sem duplicar municípios já contabilizados.
 
 ## Stack
 
-- React 19 + TypeScript + Vite
-- Tailwind CSS 4
-- shadcn/ui
-- Lucide React
-- Google Maps via iframe sem chave + camada React de marcadores em `client/src/components/Map.tsx`
-- Wouter para navegação client-side
+- React 19;
+- TypeScript;
+- Vite 7;
+- Tailwind CSS 4 com `@tailwindcss/vite`;
+- componentes de interface baseados em shadcn/ui e Radix UI;
+- Lucide React para ícones;
+- Wouter para roteamento client-side;
+- Sonner para notificações;
+- Express e esbuild apenas para empacotar e servir o build produzido;
+- Google Maps em iframe público, com camada React de marcadores;
+- `pnpm` como gerenciador de pacotes, conforme o campo `packageManager` do `package.json`.
 
-## Executar localmente
+O template é classificado como `web-static`. O diretório `server/` contém apenas um servidor mínimo para servir arquivos estáticos do build e encaminhar as rotas client-side; não há endpoints de negócio, persistência ou API de domínio implementados.
+
+## Pré-requisitos
+
+- Node.js compatível com o ambiente Vite/TypeScript do projeto;
+- pnpm 10.4.1, versão declarada no campo `packageManager` do `package.json`.
+
+O repositório não contém `.nvmrc` nem outro arquivo que fixe a versão do Node.js.
+
+## Instalação e execução local
+
+Na raiz do projeto:
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-Validar tipos e build:
+O comando `pnpm dev` executa `vite --host`. A porta padrão configurada pelo projeto WebDev é `3000`; o servidor Vite pode usar a configuração de porta disponível no ambiente.
+
+Para verificar tipos e gerar o build de produção:
 
 ```bash
 pnpm run check
 pnpm run build
 ```
 
-## Google Maps sem API key
+O build executa duas etapas:
 
-O mapa-base usa `https://maps.google.com/maps?...&output=embed`, conforme o exemplo fornecido, e não expõe API key. Como o conteúdo do iframe pertence a outro domínio, a aplicação não tenta inserir objetos JavaScript dentro do Google Maps. Em vez disso, o React mantém uma camada transparente acima do iframe e calcula a posição dos municípios por latitude/longitude usando projeção Web Mercator, com centro e zoom fixos iguais aos parâmetros do iframe.
+1. Vite gera o frontend em `dist/public`;
+2. esbuild empacota `server/index.ts` em `dist/index.js`.
 
-A camada oferece círculos de risco priorizados por z-index, pulsação para sinalização, tooltip hidrológico, seleção, filtro por região e filtro por risco. A posição é calculada pelo mesmo algoritmo do exemplo anexado: `project(lat, lng, zoom)` com escala `tileSize * 2 ** zoom` e deslocamento em pixels a partir do centro do iframe, sem fator heurístico de compressão ou correção visual. A base demonstrativa inclui as onze cidades da `baseCities`, com latitudes, longitudes, regiões, probabilidades, chuva e modelo de IA. O iframe permanece deliberadamente não interativo para manter o enquadramento nacional estável e permitir a comparação visual dos municípios em um único painel, sem tentar acessar o DOM do Google Maps. A arquitetura suporta centenas de municípios desde que os pontos sejam fornecidos por uma API ou stream externo.
+Depois do build, o servidor mínimo pode ser iniciado com:
 
-Em produção, os dados demonstrativos devem ser substituídos por uma API segura ou serviço de streaming que forneça coordenadas, status de cobertura, risco, timestamp, qualidade e proveniência. A aplicação estática não deve conter credenciais privadas nem emitir alertas públicos autonomamente.
-
-## Indicador MAV
-
-O MAV (Municípios Adicionais Validados para Monitoramento Assistido por IA) é um indicador interno do GeoHidro AI. Ele conta municípios que concluíram os gates de qualidade dos dados, validação espaço-temporal, desempenho técnico, OOD/abstention, shadow mode, auditabilidade e supervisão humana. No protótipo, o valor demonstrativo é **120** e a referência é derivada da trajetória da meta como `target2035 − currentCoverage`, atualmente `2.500 − 1.295 = 1.205`; portanto, o progresso visual é `120 / 1.205 × 100 = 9,96%`. Na futura implementação real, o MAV deve contar apenas municípios adicionais únicos, fora da cobertura operacional de referência, que concluíram todos os gates — nunca municípios já contabilizados nem simples quantidade de municípios processados. O MAV não representa municípios oficialmente incorporados ou monitorados pelo Cemaden.
-
-## Organização principal
-
-```text
-client/src/pages/Home.tsx       # Dashboard, mapa, alertas e arquitetura
-client/src/components/Map.tsx   # Loader e wrapper Google Maps
-client/src/index.css            # Tokens, identidade visual e responsividade
-client/index.html                # Metadados e fontes
+```bash
+pnpm start
 ```
 
-## Escopo acadêmico e evolução para produção
+`pnpm start` executa `NODE_ENV=production node dist/index.js`. A porta é definida por `PORT` quando informada; caso contrário, o código usa `3000`.
 
-O protótipo demonstra o fluxo de apoio à decisão, mas não substitui Cemaden, Cenad ou as Defesas Civis. O próximo passo de produção é conectar dados históricos e streams autenticados de pluviômetros, radar, satélite, rios, solo, relevo, geologia e ocorrências; adicionar persistência da trilha de auditoria; implementar modelos calibrados com validação espacial/temporal; e integrar somente os canais institucionais autorizados.
+Para abrir o build com o servidor de preview do Vite:
 
-Os dados atuais de municípios, risco e qualidade são demonstrativos e devem ser claramente substituídos por fontes oficiais antes de qualquer uso operacional.
+```bash
+pnpm run preview
+```
+
+Para formatar os arquivos conforme `.prettierrc`:
+
+```bash
+pnpm run format
+```
+
+Não há script `test` declarado no `package.json`; portanto, `pnpm test` não é um comando disponível pelo projeto neste estado.
+
+## Configuração e variáveis de ambiente
+
+Não há arquivo `.env.example` versionado. Os arquivos `.env*` são ignorados pelo `.gitignore`.
+
+As referências de configuração encontradas no código são:
+
+- `PORT`: porta usada pelo servidor mínimo de `server/index.ts`; padrão `3000`.
+- `VITE_OAUTH_PORTAL_URL` e `VITE_APP_ID`: lidos por `client/src/const.ts` para montar uma URL de login OAuth quando esse helper é utilizado.
+- `VITE_ANALYTICS_ENDPOINT` e `VITE_ANALYTICS_WEBSITE_ID`: referenciados no script de analytics de `client/index.html`.
+- `BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY`: usados apenas pelo proxy de desenvolvimento `/manus-storage` definido em `vite.config.ts` para resolver assets armazenados no ambiente Manus.
+
+Credenciais privadas não devem ser colocadas no frontend nem versionadas. A execução básica do dashboard não define uma API de domínio própria e usa dados demonstrativos locais.
+
+O fundo neural do hero é referenciado no CSS por um caminho de armazenamento Manus (`/manus-storage/neural-hydro-field_68406db2.jpg`). Em um ambiente fora do runtime Manus, esse asset dependerá de uma substituição por arquivo ou serviço de armazenamento disponível nesse ambiente.
+
+## Organização do repositório
+
+```text
+client/
+  index.html                    # Metadados, título, fontes e analytics
+  public/                       # Arquivos públicos pequenos; atualmente sem mídia do dashboard
+  src/
+    App.tsx                     # Tema, ErrorBoundary, Toaster e rotas Wouter
+    main.tsx                    # Entrada React
+    pages/Home.tsx              # Visões, dados demonstrativos e interações do dashboard
+    pages/NotFound.tsx          # Fallback de página não encontrada
+    components/Map.tsx          # Iframe do mapa, projeção, marcadores e telemetria NOAA
+    components/ui/               # Primitivos Radix/shadcn/ui
+    contexts/ThemeContext.tsx    # Contexto de tema
+    hooks/                       # Hooks reutilizáveis do template
+    lib/risk.ts                  # Níveis, prioridade, cores e classes de risco
+    lib/utils.ts                 # Utilitários de frontend
+    const.ts                     # Helpers de configuração/OAuth
+    index.css                    # Tokens, identidade visual, responsividade e animações
+server/
+  index.ts                      # Servidor mínimo para servir dist/public
+shared/
+  const.ts                      # Constantes compartilhadas pelo template
+patches/
+  wouter@3.7.1.patch             # Patch local da dependência Wouter
+vite.config.ts                  # Plugins Vite, aliases e proxy de storage Manus
+package.json                    # Scripts, dependências e package manager
+pnpm-lock.yaml                  # Lockfile do pnpm
+components.json                 # Configuração de aliases/componentes shadcn/ui
+template.json                   # Metadados do template web-static
+```
+
+## Limitações atuais e evolução
+
+O protótipo ainda não implementa:
+
+- API de domínio;
+- banco de dados ou persistência;
+- ingestão real de pluviômetros, radares, rios, solo, relevo ou ocorrências;
+- stream de municípios em tempo real;
+- autenticação integrada às visões atuais;
+- exportação real do catálogo;
+- geração ou envio autônomo de alertas;
+- modelos de IA executados no frontend.
+
+Para uma evolução em produção, os dados estáticos devem ser substituídos por serviços autenticados, com contratos de dados, proveniência, timestamps, qualidade, persistência da trilha de auditoria, validação espacial/temporal, modelos calibrados, guardrails e integração somente com canais institucionais autorizados.
