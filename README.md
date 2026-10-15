@@ -1,6 +1,6 @@
 # GeoHidro AI
 
-Dashboard web responsivo para apoio à decisão em monitoramento e alertas antecipados de riscos geo-hidrológicos, alinhado à **Meta 2.2.4 do PN-PDC 2025–2035**.
+Dashboard web responsivo para apoio à decisão em monitoramento e alertas antecipados de riscos geo-hidrológicos, alinhado à **Meta 2.2.4 do Plano Nacional de Proteção e Defesa Civil (PN-PDC 2025–2035)**.
 
 O repositório contém um protótipo de frontend com dados demonstrativos. A aplicação organiza cobertura territorial, alertas, indicadores, observabilidade e uma arquitetura de referência para expansão assistida por IA, sem substituir os sistemas ou a autoridade técnica de Cemaden, Cenad ou Defesas Civis.
 
