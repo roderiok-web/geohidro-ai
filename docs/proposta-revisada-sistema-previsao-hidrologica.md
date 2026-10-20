@@ -452,7 +452,35 @@ A solução poderá ser acompanhada por indicadores técnicos e operacionais, se
 
 Os valores-alvo e os períodos de medição deverão ser definidos pelo responsável pelo domínio. Esta proposta descreve os indicadores possíveis, mas não fixa metas que ainda não foram fornecidas.
 
-## 13. Informações que precisam ser definidas antes da implementação
+## 13. Implementação demonstrativa no protótipo
+
+Os próximos passos foram traduzidos em visões navegáveis do frontend, mantendo a separação entre proposta, dados de demonstração e futura operação real. O módulo `client/src/lib/model-governance.ts` concentra o catálogo demonstrativo usado pelas telas.
+
+### 13.1 Contrato de validação
+
+A visão **Contrato de validação** registra um primeiro protocolo demonstrativo para **Inundação urbana**, com variável-alvo **Nível / vazão**, unidade **Bacias e estações**, horizonte de **6 h**, frequência de **15 min** e divisão temporal `70% treino · 15% validação · 15% teste temporal`. A tela também apresenta as fontes e seus requisitos, além das métricas MAE, RMSE, recall de evento, falsos alarmes, antecedência média e calibração.
+
+Esses valores estruturam o primeiro caso de análise no protótipo, mas permanecem sujeitos à aprovação técnica e não representam uma configuração operacional publicada.
+
+### 13.2 Simulador de cenários
+
+A visão **Simulador** permite escolher cenários históricos, de estresse e de resiliência a fonte atrasada, além do modelo LSTM Hidro, Transformer ou GNN Bacias. A execução altera apenas o estado local da interface e apresenta score, recall, antecedência e calibração demonstrativos. A própria tela informa que o resultado não publica alertas, não altera o champion e não modifica o score vigente.
+
+### 13.3 Comparação e seleção
+
+A visão **Comparar modelos** apresenta a LSTM Hidro como modelo principal e Transformer/GNN Bacias como challengers. O protótipo mostra métricas comuns, score composto, prontidão e três gates: validade da avaliação, gates mínimos e robustez temporal. O usuário pode selecionar um candidato e enviar a recomendação para revisão humana, sem promover um modelo de forma automática.
+
+### 13.4 Monitoramento pós-seleção
+
+A visão **Monitoramento** apresenta score do champion, saúde das fontes, drift de entrada, tempo desde a revisão, série de score por janelas e sinais de investigação. O registro diferencia champion e challengers, com estados demonstrativos como saudável, em análise e dados insuficientes. A ação de abrir reavaliação é local e representa o início do fluxo de investigação.
+
+### 13.5 Governança do score
+
+A visão **Governança de score** permite alternar entre perfis demonstrativos de Inundação urbana, Cheia fluvial e Movimento de massa, ajustar pesos por slider e visualizar a soma dos critérios. A tela preserva a distinção entre métricas brutas e score composto e apresenta o fluxo Administrador → Revisor técnico → Especialista do domínio → Administrador/publicação.
+
+O salvamento do rascunho e a troca de perfil ainda não persistem dados. A implementação real deverá acrescentar autenticação, autorização por perfil, validação dos pesos, versionamento, vigência, justificativa, auditoria, aprovação e possibilidade de rollback.
+
+## 14. Informações que precisam ser definidas antes da implementação
 
 Para transformar a proposta em especificação executável, será necessário confirmar:
 
@@ -471,5 +499,7 @@ Para transformar a proposta em especificação executável, será necessário co
 - como os valores observados serão recebidos após cada previsão;
 - quais ações exigem aprovação institucional;
 - qual será a estratégia de implantação, modo sombra e rollback.
+
+As definições acima continuam necessárias para transformar o baseline demonstrativo em especificação executável e aprovada. O protótipo agora oferece telas para registrar e discutir esses itens, mas os valores apresentados ainda não devem ser tratados como configuração operacional.
 
 Essas definições devem ser registradas antes da comparação final dos modelos. Assim, a LSTM permanece como referência principal, mas a seleção de Transformer ou GNN poderá ocorrer de forma transparente quando houver evidência consistente de que a alternativa atende melhor aos critérios técnicos e operacionais do contexto avaliado.

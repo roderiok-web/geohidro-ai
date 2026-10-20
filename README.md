@@ -6,7 +6,7 @@ O repositório contém um protótipo de frontend com dados demonstrativos. A apl
 
 ## Estado atual
 
-- Aplicação React com quatro visões internas: **Visão operacional**, **Municípios**, **Fila de alertas** e **Arquitetura**.
+- Aplicação React com nove visões internas: **Visão operacional**, **Contrato de validação**, **Simulador**, **Comparar modelos**, **Monitoramento**, **Governança de score**, **Municípios**, **Fila de alertas** e **Arquitetura**.
 - Interface em tema escuro, responsiva e com linguagem visual de machine learning, observabilidade e decisão supervisionada.
 - Menu lateral minimizado por padrão em telas desktop. A logomarca alterna entre o estado fechado e aberto; em telas móveis, a barra superior permanece adaptada ao layout responsivo.
 - Hero visual com rede hidrográfica/neural, cartões de métricas e grids de operação territorial.
@@ -41,6 +41,27 @@ O repositório contém um protótipo de frontend com dados demonstrativos. A apl
 - Ordenação única por criticidade: **Crítico → Alto → Moderado**.
 - Três alertas demonstrativos, com probabilidade, tempo de antecedência, motivo e estado da decisão.
 - Atualização local do estado do alerta após as ações disponíveis.
+
+### Validação e comparação de modelos
+
+- **Contrato de validação** demonstrativo para o primeiro caso: inundação urbana, nível/vazão, bacias e estações, horizonte de 6 horas, frequência de 15 minutos e divisão temporal `70% treino · 15% validação · 15% teste temporal`.
+- Catálogo de fontes com requisito, finalidade e status de definição para pluviômetros, nível/vazão, radar meteorológico e solo/uso do solo.
+- Lista de métricas do protocolo comum: MAE, RMSE, recall de evento, falsos alarmes, antecedência média e calibração.
+- **Simulador de cenários** com reprodução histórica, estresse de chuva persistente e resiliência a fonte atrasada, comparando LSTM Hidro, Transformer e GNN Bacias em modo de análise.
+- **Comparação de modelos** com score demonstrativo, métricas de referência, gates de validade, gates mínimos, robustez temporal e envio para revisão humana.
+
+### Monitoramento pós-seleção
+
+- **Monitoramento** com KPIs de saúde das fontes, score do champion, drift de entrada e tempo desde a última revisão.
+- Série visual de score por janelas móveis, sinais para investigação e registro de champion/challengers.
+- Ação demonstrativa para abrir uma reavaliação quando houver sinal de degradação ou necessidade de revisão.
+
+### Governança do score
+
+- **Governança de score** com perfis demonstrativos por tipo de risco: Inundação urbana, Cheia fluvial e Movimento de massa.
+- Sliders para editar pesos, direção de cada critério e soma dos pesos; a interface sinaliza quando a soma é consistente.
+- Fluxo visual de aprovação com Administrador, Revisor técnico, Especialista do domínio e publicação pelo Administrador.
+- Ações de salvar rascunho e enviar recomendações para revisão são locais e demonstrativas.
 
 ### Arquitetura
 
@@ -223,6 +244,7 @@ client/
     contexts/ThemeContext.tsx    # Contexto de tema
     hooks/                       # Hooks reutilizáveis do template
     lib/risk.ts                  # Níveis, prioridade, cores e classes de risco
+    lib/model-governance.ts      # Contrato, métricas, cenários, scores e monitoramento
     lib/utils.ts                 # Utilitários de frontend
     const.ts                     # Helpers de configuração/OAuth
     index.css                    # Tokens, identidade visual, responsividade e animações
@@ -250,6 +272,12 @@ O protótipo ainda não implementa:
 - autenticação integrada às visões atuais;
 - exportação real do catálogo;
 - geração ou envio autônomo de alertas;
-- modelos de IA executados no frontend.
+- treinamento ou inferência real de LSTM, Transformer ou GNN;
+- execução real de métricas sobre previsões e observações;
+- persistência do contrato, cenários, scores, versões, aprovações ou reavaliações;
+- autenticação e autorização por perfil para a governança;
+- publicação operacional de um champion ou alertas.
+
+As telas de validação, simulador, comparação, monitoramento e governança são protótipos interativos: usam dados e resultados demonstrativos definidos em `client/src/lib/model-governance.ts`.
 
 Para uma evolução em produção, os dados estáticos devem ser substituídos por serviços autenticados, com contratos de dados, proveniência, timestamps, qualidade, persistência da trilha de auditoria, validação espacial/temporal, modelos calibrados, guardrails e integração somente com canais institucionais autorizados.
