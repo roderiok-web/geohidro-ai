@@ -226,14 +226,26 @@ As referências de configuração encontradas no código são:
 
 Credenciais privadas não devem ser colocadas no frontend nem versionadas. A execução básica do dashboard não define uma API de domínio própria e usa dados demonstrativos locais.
 
-O fundo neural do hero é referenciado no CSS por um caminho de armazenamento Manus (`/manus-storage/neural-hydro-field_68406db2.jpg`). Em um ambiente fora do runtime Manus, esse asset dependerá de uma substituição por arquivo ou serviço de armazenamento disponível nesse ambiente.
+O fundo neural do hero está versionado em `client/public/assets/neural-hydro-field.webp` e é referenciado por `/assets/neural-hydro-field.webp`, tornando o asset autocontido também no deploy da Vercel.
+
+## Deploy na Vercel
+
+O repositório contém `vercel.json` para orientar o deploy da aplicação estática:
+
+- instalação: `pnpm install --frozen-lockfile`;
+- build: `pnpm run build`;
+- saída frontend: `dist/public`;
+- fallback de rotas client-side: todas as rotas retornam `index.html`.
+
+A integração da Vercel pode apontar para a branch `main` do repositório `roderiok-web/geohidro-ai`. O projeto permanece frontend estático: as fontes NOAA e o iframe público do Google Maps são acessados pelo navegador, e os dados de modelos/governança continuam demonstrativos e locais.
 
 ## Organização do repositório
 
 ```text
 client/
   index.html                    # Metadados, título, fontes e analytics
-  public/                       # Arquivos públicos pequenos; atualmente sem mídia do dashboard
+  public/                       # Arquivos públicos do frontend
+    assets/neural-hydro-field.webp # Fundo neural autocontido do hero
   src/
     App.tsx                     # Tema, ErrorBoundary, Toaster e rotas Wouter
     main.tsx                    # Entrada React
@@ -252,9 +264,13 @@ server/
   index.ts                      # Servidor mínimo para servir dist/public
 shared/
   const.ts                      # Constantes compartilhadas pelo template
+docs/
+  proposta-revisada-sistema-previsao-hidrologica.md   # Proposta revisada em Markdown
+  proposta-revisada-sistema-previsao-hidrologica.docx  # Documento-fonte anexado
 patches/
   wouter@3.7.1.patch             # Patch local da dependência Wouter
 vite.config.ts                  # Plugins Vite, aliases e proxy de storage Manus
+vercel.json                      # Build, saída e fallback para Vercel
 package.json                    # Scripts, dependências e package manager
 pnpm-lock.yaml                  # Lockfile do pnpm
 components.json                 # Configuração de aliases/componentes shadcn/ui
